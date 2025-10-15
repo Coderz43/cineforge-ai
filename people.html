@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CineForge • Person</title>
+
+  <!-- match index.html paths -->
+  <link rel="icon" href="/assets/icons/favicon.ico" />
+  <link rel="preconnect" href="https://image.tmdb.org" />
+  <link rel="stylesheet" href="/assets/css/style.css" />
+
+  <!-- Header always dark + icon group (copied from index.html) -->
+  <style>
+    /* Topbar always dark */
+    .topbar{
+      background:#0b0b0e!important;
+      color:#fff!important;
+      border-bottom:1px solid rgba(255,255,255,.06)
+    }
+    .topbar .brand{color:#fff}
+
+    /* Icons group (Bookmarks + Theme) */
+    .action-group{
+      display:flex;align-items:center;gap:6px;
+      background:#101014;
+      padding:4px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.06);
+    }
+
+    .icon-chip{
+      display:grid;place-items:center;
+      width:44px;height:40px;border-radius:10px;
+      cursor:pointer;border:1px solid transparent;
+      background:transparent;color:#ffffff;
+      transition:
+        background .18s ease,
+        color .18s ease,
+        border-color .18s ease,
+        box-shadow .20s ease,
+        transform .08s ease;
+    }
+    .icon-chip:hover,
+    .icon-chip:focus-visible{
+      background:#5e2bd6;
+      color:#ffffff;
+      border-color:#5e2bd6;
+      box-shadow:0 8px 18px rgba(94,43,214,.45), 0 0 0 2px rgba(94,43,214,.25) inset;
+      outline:0;
+    }
+    .icon-chip:active{transform:scale(.98)}
+    .icon-chip svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+
+    /* Stacked theme icons (sun/moon) */
+    .icon-stack{position:relative;width:20px;height:20px}
+    .theme-icon{position:absolute;inset:0;transition:transform .25s ease,opacity .25s ease}
+    /* default (dark) shows moon */
+    .icon-sun{opacity:0;transform:rotate(90deg) scale(0)}
+    .icon-moon{opacity:1;transform:rotate(0) scale(1)}
+    /* light theme swaps to sun */
+    :root[data-theme="light"] .icon-sun{opacity:1;transform:rotate(0) scale(1)}
+    :root[data-theme="light"] .icon-moon{opacity:0;transform:rotate(-90deg) scale(0)}
+
+    /* Light theme text visibility for chips/inputs (same as index) */
+    :root[data-theme="light"] .chip{color:#111!important;border-color:rgba(17,17,17,.12)}
+    :root[data-theme="light"] .chip--active{color:#fff!important}
+    :root[data-theme="light"] .sel,
+    :root[data-theme="light"] .text{color:#111!important}
+    :root[data-theme="light"] ::placeholder{color:rgba(17,17,17,.55)}
+     /* ---- Feedback block (inline styles) ---- */
+  .feedback-wrap{
+    display:flex; justify-content:center; margin:36px 0 56px;
+  }
+  .feedback-card{
+    width:min(720px, 92%);
+    padding:22px 22px 24px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.08);
+    background:linear-gradient(180deg, rgba(123,63,242,.10), rgba(123,63,242,.04));
+    box-shadow:0 6px 28px rgba(0,0,0,.25);
+  }
+  .feedback-card h3{
+    margin:0 0 14px; font-size:20px; font-weight:800; text-align:center;
+  }
+  .feedback-form{
+    display:grid; gap:12px;
+  }
+  .feedback-form .text{
+    width:100%;
+    background:#0f1014; color:#e8e9ee;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:12px; padding:12px 14px;
+    outline:0; transition:border-color .18s ease, box-shadow .18s ease;
+  }
+  .feedback-form .text:focus{
+    border-color:#7b3ff2; box-shadow:0 0 0 3px rgba(123,63,242,.25);
+  }
+  .feedback-form textarea.text{ resize:vertical; min-height:110px; }
+  .feedback-form .btn-primary{
+    justify-self:center;
+    border:0; border-radius:999px; padding:12px 22px; cursor:pointer;
+    background:#7b3ff2; color:#fff; font-weight:700;
+    box-shadow:0 10px 24px rgba(123,63,242,.35);
+    transition:filter .18s ease, transform .06s ease;
+  }
+  .feedback-form .btn-primary:hover{ filter:brightness(1.05); }
+  .feedback-form .btn-primary:active{ transform:translateY(1px); }
+  .feedback-foot{
+    text-align:center; font-size:12px; opacity:.75; margin-top:6px;
+  }
+  /* Accessibility helper for hidden labels */
+  .sr-only{
+    position:absolute !important; clip:rect(1px,1px,1px,1px);
+    width:1px; height:1px; overflow:hidden; white-space:nowrap;
+  }
+  /* Light theme tweaks */
+  :root[data-theme="light"] .feedback-card{
+    border-color:rgba(17,17,17,.12);
+    background:linear-gradient(180deg, rgba(123,63,242,.08), rgba(123,63,242,.02));
+  }
+  :root[data-theme="light"] .feedback-form .text{
+    background:#fff; color:#111; border-color:rgba(17,17,17,.14);
+  }
+  :root[data-theme="light"] .feedback-form .text::placeholder{ color:rgba(17,17,17,.55); }
+  </style>
+</head>
+<body>
+  <!-- HEADER (identical to index.html) -->
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-accent">Cine</span>Forge</a>
+
+    <!-- Right: icons in one box -->
+    <div class="action-group" aria-label="Header actions">
+      <a href="/bookmarks.html" class="icon-chip" aria-label="Bookmarks" title="Bookmarks">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"/>
+        </svg>
+      </a>
+
+      <button id="theme-toggle" class="icon-chip" aria-label="Toggle theme" title="Toggle theme">
+        <span class="icon-stack" aria-hidden="true">
+          <!-- Sun (shown in light) -->
+          <svg class="theme-icon icon-sun" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+          </svg>
+          <!-- Moon (shown in dark) -->
+          <svg class="theme-icon icon-moon" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
+          </svg>
+        </span>
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Title row -->
+    <section class="person-head">
+      <h1 class="page-title">Person</h1>
+      <p class="sub">Bio, highlights and complete filmography.</p>
+    </section>
+
+    <!-- HERO -->
+    <section id="profileHero" class="profile-hero">
+      <div class="profile-photo" aria-hidden="true"></div>
+      <div class="profile-meta">
+        <h2 id="personName" class="profile-title">Loading…</h2>
+        <div id="personFacts" class="facts"></div>
+      </div>
+    </section>
+
+    <!-- KNOWN FOR -->
+    <section class="knownfor">
+      <h3 class="section-title">Known For</h3>
+      <div id="knownForPills" class="pill-row"></div>
+    </section>
+
+    <!-- BIOGRAPHY -->
+    <section class="biography">
+      <h3 class="section-title">Biography</h3>
+      <p id="personBio" class="bio-text">—</p>
+    </section>
+
+    <!-- CONTROLS -->
+    <section class="controls">
+      <div class="seg">
+        <button class="seg-btn active" data-role="cast">Cast</button>
+        <button class="seg-btn" data-role="crew">Crew</button>
+      </div>
+      <div class="filters">
+        <select id="deptFilter" class="sel" aria-label="Department">
+          <option value="">All Departments</option>
+        </select>
+        <select id="sortFilter" class="sel" aria-label="Sort by">
+          <option value="popularity.desc">Popularity ↓</option>
+          <option value="popularity.asc">Popularity ↑</option>
+          <option value="date.desc">Date ↓</option>
+          <option value="date.asc">Date ↑</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- CREDITS GRID -->
+    <section>
+      <div id="creditsGrid" class="grid grid-5"></div>
+    </section>
+
+ <section class="feedback-wrap">
+  <div class="feedback-card" role="form" aria-labelledby="fbTitle">
+    <h3 id="fbTitle">We value your Feedback</h3>
+    <form class="feedback-form" onsubmit="event.preventDefault(); alert('Thanks for the feedback!');">
+      <label class="sr-only" for="fb-name">Your name</label>
+      <input id="fb-name" class="text" name="name" placeholder="Your name" required />
+
+      <label class="sr-only" for="fb-email">Email</label>
+      <input id="fb-email" class="text" type="email" name="email" placeholder="Email" required />
+
+      <label class="sr-only" for="fb-message">Your message</label>
+      <textarea id="fb-message" class="text" name="message" placeholder="Your message…" rows="5" required></textarea>
+
+      <button class="btn btn-primary" type="submit">Send Feedback</button>
+      <div class="feedback-foot">We read every message.</div>
+    </form>
+  </div>
+</section>
+  </main>
+
+  <footer class="footer">
+    <p>Powered by Gemini and The Movie Database (TMDB). Not affiliated with any streaming service.</p>
+    <p>© <span id="year"></span> CineForge</p>
+  </footer>
+
+  <!-- scripts -->
+  <script type="module" src="/assets/js/people.js"></script>
+</body>
+</html>
+
+

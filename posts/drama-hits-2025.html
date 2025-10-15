@@ -1,0 +1,174 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Drama Hits That Are Breaking Records — CineForge</title>
+<meta name="description" content="Why intimate, performance-led dramas are winning 2025: writing rhythms, lensing, and release strategy."/>
+<link rel="icon" href="/assets/icons/favicon.ico"/>
+<style>
+/* ===== Theme variables ===== */
+:root {
+  --bg:#0b0b0e; --fg:#fff; --muted:#b7b9c2;
+  --card:#141414; --line:rgba(255,255,255,.08);
+  --brand:#7b3ff2;
+}
+:root[data-theme="light"] {
+  --bg:#f7f8fb; --fg:#111; --muted:#4a4d57;
+  --card:#fff; --line:#e2e6ef;
+}
+
+/* ===== Global resets ===== */
+*{box-sizing:border-box}
+html, body { height:100%; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font:16px/1.55 system-ui,Segoe UI,Roboto,Arial;
+}
+
+/* ===== Header (from index.html, fixed spacing) ===== */
+.topbar {
+  position:sticky; top:0; z-index:100;
+  background:#0b0b0e;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex; align-items:center; gap:14px;
+  padding:12px 16px; margin:0;
+}
+.brand {
+  color:#fff; text-decoration:none;
+  font-weight:900; font-size:20px;
+  flex:0 0 auto;
+}
+.brand-accent { color:var(--brand); }
+.topbar .nav {
+  flex:1 0 auto; display:flex; justify-content:center; align-items:center;
+  gap:8px; margin:0; padding:0;
+}
+.topbar .action-group {
+  flex:0 0 auto; margin-left:8px;
+  display:flex; gap:6px; align-items:center;
+  background:#101014; padding:4px;
+  border-radius:12px; border:1px solid rgba(255,255,255,.06);
+}
+
+/* ===== Chips ===== */
+.icon-chip {
+  display:grid; place-items:center;
+  height:40px; padding:0 14px;
+  border-radius:10px; border:1px solid transparent;
+  color:#fff; cursor:pointer;
+  background:transparent; text-decoration:none; line-height:1;
+  transition:background .18s,color .18s,border-color .18s,box-shadow .20s,transform .08s;
+}
+.nav .icon-chip { height:40px; }
+.icon-chip:hover,.icon-chip.is-active {
+  background:var(--brand); border-color:var(--brand);
+  box-shadow:0 8px 18px rgba(123,63,242,.45),0 0 0 2px rgba(123,63,242,.25) inset;
+}
+.icon-chip.is-active {
+  background:#5e2bd6; color:#fff; border-color:#5e2bd6;
+  box-shadow:0 8px 18px rgba(94,43,214,.45),0 0 0 2px rgba(94,43,214,.25) inset;
+}
+.icon-chip:active { transform:scale(.98); }
+.icon-chip svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2; }
+
+/* Theme icon swap */
+.icon-stack{position:relative;width:20px;height:20px}
+.theme-icon{position:absolute;inset:0;transition:transform .25s ease,opacity .25s ease}
+.icon-sun{opacity:0;transform:rotate(90deg) scale(0)}
+.icon-moon{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-sun{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-moon{opacity:0;transform:rotate(-90deg) scale(0)}
+
+/* ===== Content ===== */
+.wrap { max-width:980px; margin:0 auto; padding:28px 16px 60px; }
+.hero {
+  position:relative; height:360px; border-radius:16px; overflow:hidden;
+  border:1px solid var(--line); margin:18px 0;
+}
+.hero img { width:100%; height:100%; object-fit:cover; display:block; }
+.hero::after {
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(0deg,rgba(0,0,0,.55),transparent 40%);
+}
+.h-meta{position:absolute;left:18px;bottom:16px;color:#fff}
+.kicker{font-size:12px;letter-spacing:.4px;font-weight:800}
+.h-title{margin:6px 0 0;font-size:32px}
+.article{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+h2{margin:22px 0 8px;font-size:22px}
+h3{margin:16px 0 6px;font-size:18px;color:#141414}
+.footer{margin-top:24px;text-align:center;opacity:.8}
+</style>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Drama Hits That Are Breaking Records","datePublished":"2025-05-06","author":{"@type":"Organization","name":"CineForge"},"image":["/assets/blog/drama-2025.jpg"]}
+</script>
+</head><body>
+<header class="topbar">
+  <a class="brand" href="/"><span class="brand-accent">Cine</span>Forge</a>
+  <nav class="nav" aria-label="Primary">
+    <a class="icon-chip nav-chip" href="/">Home</a>
+    <a class="icon-chip nav-chip" href="/reels.html">Reels</a>
+    <a class="icon-chip nav-chip is-active" href="/blog.html">Blog</a>
+  </nav>
+   <div class="action-group" aria-label="Header actions">
+      <a href="/bookmarks.html" class="icon-chip" aria-label="Bookmarks" title="Bookmarks">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"/>
+        </svg>
+      </a>
+      <button id="theme-toggle" class="icon-chip" aria-label="Toggle theme" title="Toggle theme">
+        <span class="icon-stack" aria-hidden="true">
+          <svg class="theme-icon icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg class="theme-icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+        </span>
+      </button>
+    </div>
+  </header>
+
+<main class="wrap">
+  <section class="hero"><img src="/assets/samples/drama2025.jpg" alt="Drama still 2025">
+    <div class="h-meta"><div class="kicker">MOVIE REVIEWS • MAY 2025</div><h1 class="h-title">Drama Hits That Are Breaking Records</h1></div>
+  </section>
+
+  <article class="article">
+    <p>In 2025, drama films are breaking records across theaters and streaming. Audiences are tired of formula and want <strong>raw emotion, layered characters, and grounded conflicts</strong>. These dramas prove that box office firepower can come from whispered conversations, courtroom battles, and family showdowns rather than explosions.</p>
+
+    <h2>Why dramas are thriving</h2>
+    <ul>
+      <li><strong>Authenticity:</strong> Real accents, rituals, and textures make the worlds believable.</li>
+      <li><strong>Editing style:</strong> Time jumps and elliptical cuts that trust the audience to piece it together.</li>
+      <li><strong>Performance focus:</strong> Directors leaving space for actors instead of rushing for plot beats.</li>
+    </ul>
+
+    <h2>Top drama hits of 2025</h2>
+
+    <h3>1. The Silent Shore</h3>
+    <p>A coastal drama where the sea feels like a character itself. With meditative pacing and stunning cinematography, it has crossed language barriers to become a worldwide success.</p>
+
+    <h3>2. Fractured Bonds</h3>
+    <p>A chamber drama about a family torn apart in a courtroom. Its minimalist design makes every pause and every glare feel seismic. Critics hail it as this year’s “actors’ showcase.”</p>
+
+    <h3>3. Dust and Ashes</h3>
+    <p>Hailing from South India, this rural tragedy about land disputes exploded globally when it hit Netflix. The sincerity of its storytelling resonated deeply across continents.</p>
+
+    <h3>4. A House of Many Windows</h3>
+    <p>An ensemble drama spanning four generations of one family in a single building. It’s both a personal story and a city-wide chronicle — with set design praised as a cinematic time capsule.</p>
+
+    <h3>5. Until the Last Train</h3>
+    <p>A poignant love story framed against a collapsing railway system. The climactic one-take sequence has been called one of the most moving scenes of the decade.</p>
+
+    <h2>Closing thoughts</h2>
+    <p>Dramas in 2025 show that <em>spectacle is optional, but emotion is essential</em>. By focusing on performances and honest writing, these films are not just winning awards — they’re pulling massive numbers and proving that intimacy can sell tickets, too.</p>
+
+    <div class="footer">© <span id="year"></span> CineForge</div>
+  </article>
+</main>
+
+<script>
+(function(){const k='cf-theme',s=localStorage.getItem(k),
+p=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+document.documentElement.setAttribute('data-theme',s||p);
+document.getElementById('theme-toggle').onclick=()=>{const n=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';document.documentElement.setAttribute('data-theme',n);localStorage.setItem(k,n);};
+document.getElementById('year').textContent=new Date().getFullYear();})();
+</script>
+</body></html>

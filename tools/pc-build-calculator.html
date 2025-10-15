@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PC Build Calculator — CineForge</title>
+  <meta name="description" content="Plan your dream PC with AI-assisted build recommendations. Enter your budget and primary use, then get compatible parts guidance, price ranges, and performance tips." />
+  <link rel="icon" href="/assets/icons/favicon.ico" />
+  <link rel="stylesheet" href="/assets/css/style.css" />
+
+ <style>
+:root {
+  --bg:#0b0b0e; --fg:#fff; --muted:#b7b9c2;
+  --card:#141414; --line:rgba(255,255,255,.08);
+  --brand:#7b3ff2;
+}
+:root[data-theme="light"] {
+  --bg:#f7f8fb; --fg:#111; --muted:#4a4d57;
+  --card:#fff; --line:#e2e6ef;
+}
+
+/* ===== Global resets ===== */
+*{box-sizing:border-box}
+html, body { height:100%; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font:16px/1.55 system-ui,Segoe UI,Roboto,Arial;
+}
+
+/* ===== Header (from index.html, fixed spacing) ===== */
+.topbar {
+  position:sticky; top:0; z-index:100;
+  background:#0b0b0e;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex; align-items:center; gap:14px;
+  padding:12px 16px; margin:0;
+}
+.brand {
+  color:#fff; text-decoration:none;
+  font-weight:900; font-size:20px;
+  flex:0 0 auto;
+}
+.brand-accent { color:var(--brand); }
+.topbar .nav {
+  flex:1 0 auto; display:flex; justify-content:center; align-items:center;
+  gap:8px; margin:0; padding:0;
+}
+.topbar .action-group {
+  flex:0 0 auto; margin-left:8px;
+  display:flex; gap:6px; align-items:center;
+  background:#101014; padding:4px;
+  border-radius:12px; border:1px solid rgba(255,255,255,.06);
+}
+
+/* ===== Chips ===== */
+.icon-chip {
+  display:grid; place-items:center;
+  height:40px; padding:0 14px;
+  border-radius:10px; border:1px solid transparent;
+  color:#fff; cursor:pointer;
+  background:transparent; text-decoration:none; line-height:1;
+  transition:background .18s,color .18s,border-color .18s,box-shadow .20s,transform .08s;
+}
+.nav .icon-chip { height:40px; }
+.icon-chip:hover,.icon-chip.is-active {
+  background:var(--brand); border-color:var(--brand);
+  box-shadow:0 8px 18px rgba(123,63,242,.45),0 0 0 2px rgba(123,63,242,.25) inset;
+}
+.icon-chip.is-active {
+  background:#5e2bd6; color:#fff; border-color:#5e2bd6;
+  box-shadow:0 8px 18px rgba(94,43,214,.45),0 0 0 2px rgba(94,43,214,.25) inset;
+}
+.icon-chip:active { transform:scale(.98); }
+.icon-chip svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2; }
+
+/* Theme icon swap */
+.icon-stack{position:relative;width:20px;height:20px}
+.theme-icon{position:absolute;inset:0;transition:transform .25s ease,opacity .25s ease}
+.icon-sun{opacity:0;transform:rotate(90deg) scale(0)}
+.icon-moon{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-sun{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-moon{opacity:0;transform:rotate(-90deg) scale(0)}
+
+/* ===== rails / hero ===== */
+.rail{max-width:1120px;margin:0 auto;padding:0 18px}
+.hero .badge{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:12px;border:1px solid rgba(123,63,242,.35);background:#121520;color:#a7a3ff;font-weight:700;font-size:.82rem;margin:0 auto 8px}
+:root[data-theme="light"] .hero .badge{background:#faf8ff;color:#5e2bd6;border-color:#d8cfff}
+.hero .typo{font-size:clamp(34px,4vw,52px);font-weight:900;margin:6px 0}
+.hero .sub{max-width:820px;margin:4px auto 0;line-height:1.55}
+
+/* ===== features ===== */
+.why-grid{display:grid;gap:22px;margin-top:28px;grid-template-columns:1fr}
+@media(min-width:720px){.why-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:980px){.why-grid{grid-template-columns:repeat(4,1fr)}}
+.why-grid .card{padding:18px;text-align:center}
+
+/* ===== build area (two cards) ===== */
+.build-grid{display:grid;gap:22px;margin-top:26px;grid-template-columns:1fr}
+@media(min-width:980px){.build-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.build-card{padding:18px}
+.build-card h3.title{font-size:1.12rem;margin-bottom:10px}
+
+.field{display:block;width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:#0f1117;color:#fff}
+:root[data-theme="light"] .field{background:#fff;color:#111;border-color:rgba(0,0,0,.12)}
+textarea.field{min-height:120px;resize:vertical}
+.row.controls{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:600px){.row.controls{grid-template-columns:1fr 1fr}}
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;padding:12px 14px;border-radius:12px;border:1px solid transparent;cursor:pointer}
+.btn-primary{background:#7b3ff2;color:#fff;box-shadow:0 8px 20px rgba(123,63,242,.28)}
+.btn-ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.14)}
+.chips{display:grid;gap:8px;margin-top:12px}
+.chips .chip{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:#101218;color:rgba(255,255,255,.9);cursor:pointer}
+.chips .chip:hover{background:#121520;border-color:rgba(123,63,242,.35)}
+
+/* ===== results card to mimic competitor ===== */
+.status{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;margin-bottom:12px;background:#0f1117;border:1px solid rgba(255,255,255,.12)}
+.status.success{border-color:rgba(74,222,128,.35)}
+.status.warn{border-color:rgba(251,191,36,.35)}
+.result-card{border:1px solid rgba(255,255,255,.12);background:#0f1117;border-radius:12px;padding:12px}
+.result-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.result-head strong{font-weight:800}
+pre.reco{white-space:pre-wrap;margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;line-height:1.45}
+.copy-btn{padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:#181b25;color:#fff;cursor:pointer}
+.copy-btn:hover{border-color:#7b3ff2}
+.buy-title{margin:12px 0 6px;font-weight:800}
+
+/* ===== Quick Buy Links (fixed: single-line, no-wrap, ellipsis) ===== */
+.buy-grid{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:560px){.buy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.buy-link{
+  display:flex;align-items:center;gap:8px;width:100%;
+  padding:10px 12px;border-radius:10px;text-decoration:none;
+  border:1px solid rgba(163,230,53,.35);
+  background:rgba(101,163,13,.12);color:#d9f99d;
+  white-space:nowrap;overflow:hidden;
+}
+.buy-link:hover{border-color:#86efac}
+.buy-link .ico{flex:0 0 auto;line-height:1}
+.buy-link .txt{
+  flex:1 1 auto;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;
+}
+
+/* ===== footer (same palette as other pages) ===== */
+footer.footer{--sf-bg:#0a0a0a;--sf-fg:rgba(255,255,255,.90);--sf-dim:rgba(255,255,255,.68);--sf-border:rgba(255,255,255,.08);--sf-accent:#7b3ff2;--sf-accent-2:#9e7cff;background:var(--sf-bg);color:var(--sf-fg);border-top:1px solid var(--sf-border);margin-top:48px}
+footer.footer a{color:var(--sf-fg);text-decoration:none}
+footer.footer a:hover{color:var(--sf-accent-2)}
+.footer__grid{max-width:1120px;margin:0 auto;padding:40px 20px 20px;display:grid;grid-template-columns:1fr;gap:26px;text-align:center}
+@media(min-width:680px){.footer__grid{grid-template-columns:repeat(3,minmax(0,1fr));text-align:left}}
+@media(min-width:980px){.footer__grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.footer__brand .brand{font-weight:800;letter-spacing:.2px;display:inline-block;margin-bottom:6px}
+.footer__text{color:var(--sf-dim);max-width:720px;margin:4px auto 12px;line-height:1.55}
+.footer__social{display:flex;gap:12px;justify-content:center}
+@media(min-width:680px){.footer__social{justify-content:flex-start}}
+.footer__social a{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--sf-border);border-radius:10px;color:var(--sf-dim);transition:.18s}
+.footer__social a:hover{color:#fff;background:rgba(123,63,242,.16);border-color:rgba(123,63,242,.45);transform:translateY(-1px)}
+.footer__title{font-weight:700;letter-spacing:.3px;margin:4px 0 8px;color:#fff}
+.footer__list{list-style:none;margin:0;padding:0}
+.footer__list li{padding:6px 0}
+.footer__bottom{border-top:1px solid var(--sf-border);padding:14px 20px 26px;text-align:center}
+.footer__fine,.footer__copy{color:var(--sf-dim);margin:4px 0}
+</style>
+
+
+  <!-- SEO -->
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebPage","name":"PC Build Calculator — CineForge","description":"AI-assisted PC build recommendations with pricing tiers, compatibility tips, and performance guidance for gaming, workstations, and more.","url":"https://your-domain.example/tools/pc-build-calculator.html","isPartOf":{"@type":"WebSite","name":"CineForge"}}
+  </script>
+</head>
+<body>
+
+<!-- ===== NAVBAR (same as others) ===== -->
+
+  <!-- ===== Header ===== -->
+  <header class="topbar">
+  <a class="brand" href="/"><span class="brand-accent">Cine</span>Forge</a>
+  <nav class="nav" aria-label="Primary">
+    <a class="icon-chip nav-chip" data-route="/" href="/">Home</a>
+    <a class="icon-chip nav-chip" data-route="/reels.html" href="/reels.html">Reels</a>
+    <a class="icon-chip nav-chip is-active" data-route="/blog.html" href="/blog.html">Blog</a>  <a class="icon-chip nav-chip" data-route="/tools.html" href="/tools.html">Explore Tools</a>
+  </nav>
+  <div class="action-group" aria-label="Header actions">
+      <a href="/bookmarks.html" class="icon-chip" aria-label="Bookmarks" title="Bookmarks">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"/>
+        </svg>
+      </a>
+      <button id="theme-toggle" class="icon-chip" aria-label="Toggle theme" title="Toggle theme">
+        <span class="icon-stack" aria-hidden="true">
+          <svg class="theme-icon icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg class="theme-icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+        </span>
+      </button>
+    </div>
+  </header>
+
+<main class="container" style="padding-top:22px">
+  <!-- HERO -->
+  <section class="hero rail" aria-labelledby="pc-hero">
+    <div class="badge">🧮 <span>AI-Powered</span></div>
+    <h1 id="pc-hero" class="typo">Build Your PC</h1>
+    <p class="sub">Tell us your needs and budget, and we’ll create a balanced parts list plus quick buy links.</p>
+  </section>
+
+  <!-- WHY -->
+  <section class="rail" aria-label="Why Use Our Calculator">
+    <div class="why-grid">
+      <div class="card"><div>💲</div><h3 class="title">Budget Optimization</h3><p>Smarter trade-offs by tier.</p></div>
+      <div class="card"><div>🛡️</div><h3 class="title">Compatibility Check</h3><p>Sockets, chipsets, RAM, PSU headroom.</p></div>
+      <div class="card"><div>📈</div><h3 class="title">Performance Insights</h3><p>Expectations for games & workloads.</p></div>
+      <div class="card"><div>🕒</div><h3 class="title">Future-Proofing</h3><p>Recommendations that age well.</p></div>
+    </div>
+  </section>
+
+  <!-- BUILD -->
+  <section class="rail" style="margin-top:34px" aria-labelledby="build-heading">
+    <h2 id="build-heading" class="typo" style="font-size:1.9rem;margin-bottom:8px">Build Your PC</h2>
+    <p class="sub" style="margin-bottom:14px">Tell us about your needs and budget, and we'll create the perfect build for you.</p>
+
+    <div class="build-grid">
+      <!-- Left -->
+      <div class="card build-card" role="region" aria-label="Build Requirements">
+        <h3 class="title">Build Requirements</h3>
+        <form id="pc-form" novalidate>
+          <div class="row controls">
+            <div>
+              <label for="pc-budget" class="visually-hidden">Budget (USD)</label>
+              <input id="pc-budget" class="field" type="number" min="300" step="50" placeholder="e.g., 1500" />
+            </div>
+            <div>
+              <label for="pc-usage" class="visually-hidden">Primary Usage</label>
+              <select id="pc-usage" class="field">
+                <option value="">Select your primary use case</option>
+                <option value="gaming">Gaming</option>
+                <option value="content">Content Creation</option>
+                <option value="workstation">Professional Workstation</option>
+                <option value="office">Office/Productivity</option>
+                <option value="gaming_streaming">Gaming + Streaming</option>
+                <option value="enthusiast">Enthusiast/High-End</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="pc-notes" class="visually-hidden">Additional Preferences</label>
+          <textarea id="pc-notes" class="field" placeholder="Any specific requirements, brand preferences, resolution targets (1080p/1440p/4K), SFF/quiet build, components you already have…"></textarea>
+
+          <div class="chips" aria-label="Quick budgets">
+            <div class="chip" data-fill-budget="800"  data-fill-usage="office">💼 Office $800</div>
+            <div class="chip" data-fill-budget="1200" data-fill-usage="gaming">🎮 Gaming $1200</div>
+            <div class="chip" data-fill-budget="2000" data-fill-usage="content">🎬 Creator $2000</div>
+            <div class="chip" data-fill-budget="3500" data-fill-usage="enthusiast">⚡ Enthusiast $3500</div>
+          </div>
+
+          <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+            <button type="submit" class="btn btn-primary">🧮 Calculate My Build</button>
+            <button id="pc-clear" type="button" class="btn btn-ghost">🧹 Clear</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Right -->
+      <div class="card build-card" role="region" aria-label="Your Build Recommendation">
+        <h3 class="title">Your Build Recommendation</h3>
+
+        <!-- placeholder -->
+        <div id="pc-output" class="status" style="display:block">
+          <span>ℹ️</span><span>Fill in your requirements and click <strong>Calculate My Build</strong>.</span>
+        </div>
+
+        <!-- result -->
+        <div id="pc-result" style="display:none">
+          <div id="pc-status" class="status"><span>⏳</span><span id="pc-status-text">Working…</span></div>
+
+          <div class="result-card">
+            <div class="result-head">
+              <strong>Your Build Recommendation</strong>
+              <button id="pc-copy" class="copy-btn" type="button" title="Copy to clipboard">📋 Copy</button>
+            </div>
+            <pre id="pc-reco" class="reco"></pre>
+            <hr style="border-color:rgba(255,255,255,.12);margin:12px 0">
+            <div class="buy-title">Quick Buy Links</div>
+            <div id="pc-buylinks" class="buy-grid"></div>
+            <p class="footer__fine" style="margin-top:6px">* Amazon affiliate links — we may earn a commission</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sample tiers placeholder (optional) -->
+  <section id="results" class="rail" style="margin-top:34px">
+    <h2 class="typo" style="font-size:1.6rem;margin-bottom:10px">Sample Build Tiers</h2>
+    <div id="pc-results" class="grid tools-grid"></div>
+  </section>
+</main>
+
+<!-- ===== FOOTER (same as others) ===== -->
+<footer class="footer" id="site-footer" aria-labelledby="footer-heading">
+  <div class="footer__grid">
+    <div class="footer__brand">
+      <a class="brand" href="/"><span class="brand-accent">Cine</span>Forge</a>
+      <p class="footer__text">AI-powered picks with trailers, region-aware watch options, and easy bookmarks — built on TMDB data and Gemini reasoning.</p>
+      <div class="footer__social" aria-label="Social links">
+        <a href="https://x.com" target="_blank" rel="noopener" aria-label="X">𝕏</a>
+        <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub">GH</a>
+      </div>
+    </div>
+    <nav class="footer__col" aria-label="Product">
+      <h3 class="footer__title">Product</h3>
+      <ul class="footer__list">
+        <li><a href="/">Home</a></li>
+        <li><a href="/reels.html">Reels</a></li>
+        <li><a href="/blog.html">Blog</a></li>
+        <li><a href="/bookmarks.html">Bookmarks</a></li>
+      </ul>
+    </nav>
+    <nav class="footer__col" aria-label="Features">
+      <h3 class="footer__title">Features</h3>
+      <ul class="footer__list">
+        <li><a href="/#welcome">Describe → AI Picks</a></li>
+        <li><a href="/#results">Title Search &amp; Typeahead</a></li>
+        <li><a href="/#filters">Genre Filters</a></li>
+        <li><a href="/#region-price-tools">Region &amp; Providers</a></li>
+      </ul>
+    </nav>
+    <nav class="footer__col" aria-label="Resources">
+      <h3 class="footer__title">Resources</h3>
+      <ul class="footer__list">
+        <li><a href="/privacy.html">Privacy</a></li>
+        <li><a href="/terms.html">Terms</a></li>
+        <li><a href="/sitemap.xml">Sitemap</a></li>
+        <li><a href="mailto:hello@cineforge.app">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="footer__bottom">
+    <p class="footer__fine">Powered by Gemini and The Movie Database (TMDB). Not affiliated with any streaming service.</p>
+    <p class="footer__copy">© <span id="year"></span> CineForge</p>
+  </div>
+</footer>
+
+<script>
+ 
+  window.CINEFORGE_GEMINI_KEY   = 'AIzaSyB9Yy756zuyH55DnTBCGX6Y2HDDA41jKOo';
+ 
+</script>
+<script src="/assets/js/tools/gemini.js"></script>
+<script type="module" src="/assets/js/tools/pc-build-calculator.js"></script>
+<script type="module" src="/assets/js/app.js"></script>
+
+</body>
+</html>

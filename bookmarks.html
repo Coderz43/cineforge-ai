@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Bookmarks — CineForge</title>
+  <meta name="description" content="Your saved movies and TV shows on CineForge." />
+  <meta name="robots" content="index,follow" />
+  <link rel="icon" href="/assets/icons/favicon.ico" />
+  <link rel="stylesheet" href="/assets/css/style.css" />
+
+  <style>
+    /* Topbar always dark */
+    .topbar{
+      background:#0b0b0e!important;
+      color:#fff!important;
+      border-bottom:1px solid rgba(255,255,255,.06)
+    }
+    .topbar .brand{color:#fff}
+
+    /* Icons group (Back + Theme) */
+    .action-group{
+      display:flex;align-items:center;gap:6px;
+      background:#101014;
+      padding:4px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.06);
+    }
+    .icon-chip{
+      display:grid;place-items:center;
+      width:44px;height:40px;border-radius:10px;
+      cursor:pointer;border:1px solid transparent;
+      background:transparent;color:#ffffff;
+      transition:
+        background .18s ease,
+        color .18s ease,
+        border-color .18s ease,
+        box-shadow .20s ease,
+        transform .08s ease;
+    }
+    .icon-chip:hover,
+    .icon-chip:focus-visible{
+      background:#5e2bd6;
+      color:#fff;
+      border-color:#5e2bd6;
+      box-shadow:0 8px 18px rgba(94,43,214,.45), 0 0 0 2px rgba(94,43,214,.25) inset;
+      outline:0;
+    }
+    .icon-chip:active{transform:scale(.98)}
+    .icon-chip svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+
+    .icon-stack{position:relative;width:20px;height:20px}
+    .theme-icon{position:absolute;inset:0;transition:transform .25s ease,opacity .25s ease}
+    .icon-sun{opacity:0;transform:rotate(90deg) scale(0)}
+    .icon-moon{opacity:1;transform:rotate(0) scale(1)}
+    :root[data-theme="light"] .icon-sun{opacity:1;transform:rotate(0) scale(1)}
+    :root[data-theme="light"] .icon-moon{opacity:0;transform:rotate(-90deg) scale(0)}
+
+    #back-btn{border:0;background:transparent}
+
+    /* Light theme input text fix */
+    :root[data-theme="light"] .sel,
+    :root[data-theme="light"] .text{color:#111!important}
+    /* ===== LIGHT THEME: Toolbar & controls visibility ==== */
+:root[data-theme="light"] .toolbar{
+  background:#fff !important;
+  border:1px solid #e2e6ef !important;
+  border-radius:14px !important;
+  padding:10px 12px !important;
+  box-shadow:0 6px 20px rgba(17,17,17,.06) !important;
+  color:#111 !important; /* labels/text inside toolbar */
+}
+
+/* Selects, buttons (you used .sel for both), and the search input */
+:root[data-theme="light"] .toolbar .sel,
+:root[data-theme="light"] .toolbar .text{
+  background:#fff !important;
+  color:#111 !important;
+  border:1px solid #d9deea !important;
+  border-radius:10px !important;
+  height:38px;
+  padding:8px 10px;
+}
+
+/* Placeholder in search field */
+:root[data-theme="light"] .toolbar .text::placeholder{ color:#666 !important; }
+
+/* Options dropdown text */
+:root[data-theme="light"] select.sel option{ color:#111; background:#fff; }
+
+/* Focus ring for accessibility */
+:root[data-theme="light"] .toolbar .sel:focus,
+:root[data-theme="light"] .toolbar .text:focus{
+  outline:0;
+  border-color:#5e2bd6 !important;
+  box-shadow:0 0 0 3px rgba(94,43,214,.18) !important;
+}
+
+/* Clear button hover (since it's styled via .sel) */
+:root[data-theme="light"] #bm-clear.sel:hover{
+  border-color:#5e2bd6 !important;
+  box-shadow:0 0 0 3px rgba(94,43,214,.14);
+}
+
+/* Page title/readable body text in light */
+:root[data-theme="light"] .page-title{ color:#111 !important; }
+:root[data-theme="light"] .container{ color:#111 !important; }
+
+/* (Optional) If you render chips/tags in bookmarks later */
+:root[data-theme="light"] .bm-chip{
+  background:#eef0f6 !important;
+  color:#111 !important;
+  border:1px solid #d9deea !important;
+}
+:root[data-theme="light"] .bm-chip.is-on{
+  background:#5e2bd6 !important;
+  color:#fff !important;
+  border-color:#5e2bd6 !important;
+  box-shadow:0 8px 18px rgba(94,43,214,.25),
+             0 0 0 2px rgba(94,43,214,.15) inset;
+}
+
+  </style>
+</head>
+<body class="bookmarks">
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-accent">Cine</span>Forge</a>
+
+    <!-- Right: Back + Theme in one box -->
+    <div class="action-group" aria-label="Header actions">
+      <button id="back-btn" class="icon-chip" aria-label="Go back" title="Go back">
+        <!-- Arrow-left -->
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+
+      <button id="theme-toggle" class="icon-chip" aria-label="Toggle theme" title="Toggle theme">
+        <span class="icon-stack" aria-hidden="true">
+          <!-- Sun (shown in light) -->
+          <svg class="theme-icon icon-sun" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+          </svg>
+          <!-- Moon (shown in dark) -->
+          <svg class="theme-icon icon-moon" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
+          </svg>
+        </span>
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1 class="page-title" style="text-align:center;margin:28px 0 10px;font-size:28px;font-weight:800;">My Bookmarks</h1>
+
+    <!-- Controls -->
+    <div class="toolbar" style="justify-content:space-between">
+      <div style="display:flex;gap:10px;align-items:center">
+        <select id="bm-type" class="sel" aria-label="Filter by type">
+          <option value="all">All Types</option>
+          <option value="movie">Movie</option>
+          <option value="tv">TV</option>
+        </select>
+        <select id="bm-sort" class="sel" aria-label="Sort">
+          <option value="recent">Recently added</option>
+          <option value="rating">Rating</option>
+          <option value="yearDesc">Year (new → old)</option>
+          <option value="yearAsc">Year (old → new)</option>
+        </select>
+        <input id="bm-search" class="text" placeholder="Search bookmarks…" aria-label="Search in bookmarks" />
+      </div>
+      <div style="display:flex;gap:10px">
+        <button id="bm-clear" class="sel" aria-label="Clear all bookmarks">Clear All</button>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <section id="bookmarks-grid" class="grid" aria-live="polite"></section>
+    <section id="bookmarks-empty" class="empty">No bookmarks yet.</section>
+
+    <div style="text-align:center;margin:22px 0 60px;">
+      <a href="/" class="btn btn-primary" style="display:inline-block;line-height:56px;height:56px;">Find Recommendations</a>
+    </div>
+  </main>
+
+  <!-- Shared modal from ui.js -->
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-label="Trailer">
+      <button class="modal-close" data-close aria-label="Close">&times;</button>
+      <div class="modal-body">
+        <iframe id="yt-frame" width="100%" height="100%" allow="autoplay; encrypted-media" allowfullscreen title="Trailer"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>Powered by Gemini and The Movie Database (TMDB).</p>
+    <p>© <span id="year"></span> CineForge</p>
+  </footer>
+
+  <script type="module">
+    import { initTheme } from '/assets/js/store.js';
+    import { guessRegion } from '/assets/js/utils.js';
+    import { renderCard, openDetails, closeTrailer } from '/assets/js/ui.js';
+    import { getVideos, getWatchProviders, getGenres } from '/assets/js/api.js';
+
+    // Theme + year
+    initTheme();
+    const year = document.getElementById('year');
+    if (year) year.textContent = new Date().getFullYear();
+
+    // Back
+    document.getElementById('back-btn').onclick =
+      () => (history.length > 1 ? history.back() : location.assign('/'));
+
+    // Elements
+    const grid = document.getElementById('bookmarks-grid');
+    const empty = document.getElementById('bookmarks-empty');
+    const typeSel = document.getElementById('bm-type');
+    const sortSel = document.getElementById('bm-sort');
+    const searchIn = document.getElementById('bm-search');
+    const btnClear = document.getElementById('bm-clear');
+
+    // State
+    let items = JSON.parse(localStorage.getItem('cineforge-bookmarks') || '[]');
+    let view = items.slice();
+    let genres = { movie: [], tv: [] };
+    let region = guessRegion();
+    const price = 'all';
+
+    // Ensure genres (for chips in the details modal)
+    (async () => {
+      try {
+        genres = await getGenres();
+      } catch { /* non-blocking */ }
+    })();
+
+    function apply() {
+      const t = typeSel.value;
+      const q = searchIn.value.trim().toLowerCase();
+      view = items
+        .filter(it => (t === 'all' ? true : it.media_type === t))
+        .filter(it => (q ? (it.title || it.name || '').toLowerCase().includes(q) : true));
+
+      switch (sortSel.value) {
+        case 'rating': view.sort((a,b)=>(b.vote_average||0)-(a.vote_average||0)); break;
+        case 'yearDesc': view.sort((a,b)=>(b.release_date||b.first_air_date||'').localeCompare(a.release_date||a.first_air_date||'')); break;
+        case 'yearAsc': view.sort((a,b)=>(a.release_date||a.first_air_date||'').localeCompare(b.release_date||b.first_air_date||'')); break;
+        default: /* recent (keep saved order) */ break;
+      }
+
+      grid.innerHTML = '';
+      if (!view.length){ empty.hidden = false; return; }
+      empty.hidden = true;
+
+      view.forEach(it => {
+        const card = renderCard(it, {
+          showRemove: true,
+          onOpen: async (item) => {
+            // trailer
+            const vids = await getVideos(item.id, item.media_type);
+            const yt = (vids.results || []).find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser')) || (vids.results || [])[0];
+
+            // genres for chips
+            let names = [];
+            try {
+              const dict = new Map([...genres.movie, ...genres.tv].map(g => [g.id, g]));
+              names = (item.genre_ids || []).map(id => dict.get(id)).filter(Boolean);
+            } catch {}
+
+            // providers
+            let providers = null;
+            try {
+              const prov = await getWatchProviders(item.id, item.media_type, region);
+              providers = prov || null;
+            } catch {}
+
+            openDetails({
+              item,
+              trailerKey: yt?.key || null,
+              genres: names,
+              providers,
+              region,
+              price
+            });
+          }
+        });
+        grid.appendChild(card);
+      });
+    }
+
+    // React to bookmark button clicks inside cards (remove -> re-read)
+    grid.addEventListener('click', (e)=>{
+      if (e.target.closest('.bookmark')) {
+        items = JSON.parse(localStorage.getItem('cineforge-bookmarks') || '[]');
+        apply();
+      }
+    });
+
+    typeSel.onchange = apply;
+    sortSel.onchange = apply;
+    searchIn.oninput = apply;
+
+    btnClear.onclick = () => {
+      if (!confirm('Clear all bookmarks?')) return;
+      localStorage.setItem('cineforge-bookmarks', '[]');
+      items = [];
+      apply();
+    };
+
+    // Shared modal close (trailer iframe)
+    document.getElementById('modal').addEventListener('click', (e) => {
+      if (!e.target.hasAttribute('data-close')) return;
+      const frame = document.getElementById('yt-frame');
+      if (frame) { closeTrailer(); return; }
+    });
+
+    apply();
+  </script>
+</body>
+</html>

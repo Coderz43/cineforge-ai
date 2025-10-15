@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CineForge — Movie Blogs 2025</title>
+  <meta name="description" content="Latest Bollywood & Hollywood movie blogs 2025 — reviews, insights, and trending updates." />
+  <link rel="icon" href="/assets/icons/favicon.ico" />
+  <link rel="stylesheet" href="/assets/css/style.css" />
+
+  <style>
+:root {
+  --bg:#0b0b0e; --fg:#fff; --muted:#b7b9c2;
+  --card:#141414; --line:rgba(255,255,255,.08);
+  --brand:#7b3ff2;
+}
+:root[data-theme="light"] {
+  --bg:#f7f8fb; --fg:#111; --muted:#4a4d57;
+  --card:#fff; --line:#e2e6ef;
+}
+
+/* ===== Global resets ===== */
+*{box-sizing:border-box}
+html, body { height:100%; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font:16px/1.55 system-ui,Segoe UI,Roboto,Arial;
+}
+
+/* ===== Header (from index.html, fixed spacing) ===== */
+.topbar {
+  position:sticky; top:0; z-index:100;
+  background:#0b0b0e;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex; align-items:center; gap:14px;
+  padding:12px 16px; margin:0;
+}
+.brand {
+  color:#fff; text-decoration:none;
+  font-weight:900; font-size:20px;
+  flex:0 0 auto;
+}
+.brand-accent { color:var(--brand); }
+.topbar .nav {
+  flex:1 0 auto; display:flex; justify-content:center; align-items:center;
+  gap:8px; margin:0; padding:0;
+}
+.topbar .action-group {
+  flex:0 0 auto; margin-left:8px;
+  display:flex; gap:6px; align-items:center;
+  background:#101014; padding:4px;
+  border-radius:12px; border:1px solid rgba(255,255,255,.06);
+}
+
+/* ===== Chips ===== */
+.icon-chip {
+  display:grid; place-items:center;
+  height:40px; padding:0 14px;
+  border-radius:10px; border:1px solid transparent;
+  color:#fff; cursor:pointer;
+  background:transparent; text-decoration:none; line-height:1;
+  transition:background .18s,color .18s,border-color .18s,box-shadow .20s,transform .08s;
+}
+.nav .icon-chip { height:40px; }
+.icon-chip:hover,.icon-chip.is-active {
+  background:var(--brand); border-color:var(--brand);
+  box-shadow:0 8px 18px rgba(123,63,242,.45),0 0 0 2px rgba(123,63,242,.25) inset;
+}
+.icon-chip.is-active {
+  background:#5e2bd6; color:#fff; border-color:#5e2bd6;
+  box-shadow:0 8px 18px rgba(94,43,214,.45),0 0 0 2px rgba(94,43,214,.25) inset;
+}
+.icon-chip:active { transform:scale(.98); }
+.icon-chip svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2; }
+
+/* Theme icon swap */
+.icon-stack{position:relative;width:20px;height:20px}
+.theme-icon{position:absolute;inset:0;transition:transform .25s ease,opacity .25s ease}
+.icon-sun{opacity:0;transform:rotate(90deg) scale(0)}
+.icon-moon{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-sun{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-moon{opacity:0;transform:rotate(-90deg) scale(0)}
+
+  /* ===== Blog page ===== */
+  .blog-page{background:#0b0b0e;color:#fff;min-height:100vh}
+  :root[data-theme="light"] .blog-page{background:#f7f8fb;color:#111}
+
+  .blog-wrap{max-width:1000px;margin:0 auto;padding:40px 16px 60px}
+  .blog-list{display:flex;flex-direction:column;gap:28px;margin-top:24px}
+
+  .blog-item{
+    display:flex;flex-direction:row;gap:20px;
+    background:#141414;border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;overflow:hidden;
+    transition:transform .2s ease,box-shadow .2s ease;
+  }
+  .blog-item:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.4)}
+
+  .blog-thumb{flex:0 0 300px;height:180px;overflow:hidden}
+  .blog-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+
+  .blog-content{flex:1;padding:16px;display:flex;flex-direction:column}
+  .blog-meta{font-size:13px;color:#aaa;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+  .blog-title{font-size:20px;font-weight:800;margin:0 0 8px;line-height:1.25}
+  .blog-title a{display:inline-block;color:inherit;text-decoration:none;cursor:pointer;transition:color .15s ease,text-shadow .15s ease}
+  .blog-title a:hover,.blog-title a:focus-visible{color:#ff3b3b;text-decoration:none;text-shadow:0 0 0.01px currentColor;outline:0}
+
+  .blog-excerpt{font-size:15px;line-height:1.5;flex:1;color:#ddd}
+  .blog-footer{font-size:13px;color:#888;margin-top:10px;display:flex;justify-content:space-between;align-items:center}
+  .blog-footer span{opacity:.85}
+  .blog-footer a{color:#7b3ff2;text-decoration:none;font-weight:600}
+  .blog-footer a:hover{text-decoration:underline}
+
+  :root[data-theme="light"] .blog-item{background:#fff;border-color:#e2e6ef}
+  :root[data-theme="light"] .blog-excerpt{color:#333}
+  :root[data-theme="light"] .blog-meta{color:#555}
+</style>
+
+</head>
+<body class="blog-page">
+
+  <!-- ===== Header ===== -->
+  <header class="topbar">
+  <a class="brand" href="/"><span class="brand-accent">Cine</span>Forge</a>
+  <nav class="nav" aria-label="Primary">
+    <a class="icon-chip nav-chip" data-route="/" href="/">Home</a>
+    <a class="icon-chip nav-chip" data-route="/reels.html" href="/reels.html">Reels</a>
+    <a class="icon-chip nav-chip is-active" data-route="/blog.html" href="/blog.html">Blog</a>  <a class="icon-chip nav-chip" data-route="/tools.html" href="/tools.html">Explore Tools</a>
+  </nav>
+  <div class="action-group" aria-label="Header actions">
+      <a href="/bookmarks.html" class="icon-chip" aria-label="Bookmarks" title="Bookmarks">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"/>
+        </svg>
+      </a>
+      <button id="theme-toggle" class="icon-chip" aria-label="Toggle theme" title="Toggle theme">
+        <span class="icon-stack" aria-hidden="true">
+          <svg class="theme-icon icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg class="theme-icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+        </span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Blog Content ===== -->
+  <main class="blog-wrap">
+    <h1 style="font-weight:800;margin-bottom:10px;">Movie Blogs — 2025</h1>
+    <p style="color:#aaa;max-width:760px;">Latest insights, reviews, and stories from Bollywood & Hollywood. Fresh 2025 updates only.</p>
+
+    <div class="blog-list">
+      <!-- 1 -->
+      <article class="blog-item">
+        <div class="blog-thumb"><img src="/assets/samples/bollywood2025.jpg" alt="Bollywood 2025"></div>
+        <div class="blog-content">
+          <div class="blog-meta">MOVIE LISTS • Jan 2025</div>
+          <h2 class="blog-title">
+            <a href="/posts/bollywood-2025-blockbusters.html">Bollywood 2025: New Era of Blockbusters</a>
+          </h2>
+          <p class="blog-excerpt">An in-depth look at how Bollywood is redefining action and storytelling in 2025...</p>
+          <div class="blog-footer">
+            <span>0 COMMENTS</span>
+            <a href="/posts/bollywood-2025-blockbusters.html">Read More →</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2 -->
+      <article class="blog-item">
+        <div class="blog-thumb"><img src="/assets/samples/hollywood2025.jpg" alt="Hollywood 2025"></div>
+        <div class="blog-content">
+          <div class="blog-meta">MOVIE REVIEWS • Feb 2025</div>
+          <h2 class="blog-title">
+            <a href="/posts/hollywood-2025-sci-fi.html">Hollywood 2025: Sci-Fi Takes the Lead</a>
+          </h2>
+          <p class="blog-excerpt">Exploring the rise of futuristic sci-fi hits shaping Hollywood in 2025...</p>
+          <div class="blog-footer">
+            <span>0 COMMENTS</span>
+            <a href="/posts/hollywood-2025-sci-fi.html">Read More →</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3 -->
+      <article class="blog-item">
+        <div class="blog-thumb"><img src="/assets/samples/fusion2025.jpg" alt="Fusion 2025"></div>
+        <div class="blog-content">
+          <div class="blog-meta">FEATURE • Mar 2025</div>
+          <h2 class="blog-title">
+            <a href="/posts/bollywood-hollywood-crossover-2025.html">Bollywood × Hollywood Crossover 2025</a>
+          </h2>
+          <p class="blog-excerpt">Crossover projects are booming in 2025, uniting stars from both industries...</p>
+          <div class="blog-footer">
+            <span>0 COMMENTS</span>
+            <a href="/posts/bollywood-hollywood-crossover-2025.html">Read More →</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 4 -->
+      <article class="blog-item">
+        <div class="blog-thumb"><img src="/assets/samples/action2025.jpg" alt="Action 2025"></div>
+        <div class="blog-content">
+          <div class="blog-meta">ACTION • Apr 2025</div>
+          <h2 class="blog-title">
+            <a href="/posts/action-cinema-2025.html">Action Cinema Reloaded in 2025</a>
+          </h2>
+          <p class="blog-excerpt">Adrenaline-packed blockbusters return with new directors reshaping the action genre...</p>
+          <div class="blog-footer">
+            <span>0 COMMENTS</span>
+            <a href="/posts/action-cinema-2025.html">Read More →</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 5 -->
+      <article class="blog-item">
+        <div class="blog-thumb"><img src="/assets/samples/drama2025.jpg" alt="Drama 2025"></div>
+        <div class="blog-content">
+          <div class="blog-meta">MOVIE REVIEWS • May 2025</div>
+          <h2 class="blog-title">
+            <a href="/posts/drama-hits-2025.html">Drama Hits That Are Breaking Records</a>
+          </h2>
+          <p class="blog-excerpt">Emotional dramas are finding massive audiences across cinemas and OTT platforms in 2025...</p>
+          <div class="blog-footer">
+            <span>0 COMMENTS</span>
+            <a href="/posts/drama-hits-2025.html">Read More →</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 6 -->
+      <article class="blog-item">
+        <div class="blog-thumb"><img src="/assets/samples/comedy2025.jpg" alt="Comedy 2025"></div>
+        <div class="blog-content">
+          <div class="blog-meta">COMEDY • Jun 2025</div>
+          <h2 class="blog-title">
+            <a href="/posts/comedy-2025.html">Comedy in 2025: Laughter Across Borders</a>
+          </h2>
+          <p class="blog-excerpt">From Bollywood slapstick to Hollywood satire, comedies are uniting audiences worldwide...</p>
+          <div class="blog-footer">
+            <span>0 COMMENTS</span>
+            <a href="/posts/comedy-2025.html">Read More →</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Powered by Gemini and The Movie Database (TMDB). Not affiliated with any streaming service.</p>
+    <p>© <span id="year"></span> CineForge</p>
+  </footer>
+
+  <script>
+    (function(){
+      const KEY='cf-theme';
+      const saved=localStorage.getItem(KEY);
+      const prefers=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+      const theme=saved||prefers;
+      document.documentElement.setAttribute('data-theme',theme);
+
+      document.getElementById('theme-toggle').addEventListener('click',()=>{
+        const next=(document.documentElement.getAttribute('data-theme')==='light')?'dark':'light';
+        document.documentElement.setAttribute('data-theme',next);
+        localStorage.setItem(KEY,next);
+      });
+
+      const here=location.pathname.replace(/\/+$/,'')||'/';
+      document.querySelectorAll('.nav-chip').forEach(a=>{
+        const route=a.getAttribute('data-route');
+        if((route==='/'&&here==='/')||(route!=='/'&&here.endsWith(route))) a.classList.add('is-active');
+      });
+
+      document.getElementById('year').textContent=new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>

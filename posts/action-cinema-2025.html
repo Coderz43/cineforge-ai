@@ -1,0 +1,190 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Action Cinema Reloaded in 2025 — CineForge</title>
+<meta name="description" content="Kinetic camera work, real stunts, and smarter geography—how action returns to form in 2025."/>
+<link rel="icon" href="/assets/icons/favicon.ico"/>
+<style>
+/* ===== Theme variables ===== */
+:root {
+  --bg:#0b0b0e; --fg:#fff; --muted:#b7b9c2;
+  --card:#141414; --line:rgba(255,255,255,.08);
+  --brand:#7b3ff2;
+}
+:root[data-theme="light"] {
+  --bg:#f7f8fb; --fg:#111; --muted:#4a4d57;
+  --card:#fff; --line:#e2e6ef;
+}
+
+/* ===== Global resets ===== */
+*{box-sizing:border-box}
+html, body { height:100%; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font:16px/1.55 system-ui,Segoe UI,Roboto,Arial;
+}
+
+/* ===== Header (from index.html, fixed spacing) ===== */
+.topbar {
+  position:sticky; top:0; z-index:100;
+  background:#0b0b0e;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex; align-items:center; gap:14px;
+  padding:12px 16px; margin:0;
+}
+.brand {
+  color:#fff; text-decoration:none;
+  font-weight:900; font-size:20px;
+  flex:0 0 auto;
+}
+.brand-accent { color:var(--brand); }
+.topbar .nav {
+  flex:1 0 auto; display:flex; justify-content:center; align-items:center;
+  gap:8px; margin:0; padding:0;
+}
+.topbar .action-group {
+  flex:0 0 auto; margin-left:8px;
+  display:flex; gap:6px; align-items:center;
+  background:#101014; padding:4px;
+  border-radius:12px; border:1px solid rgba(255,255,255,.06);
+}
+
+/* ===== Chips ===== */
+.icon-chip {
+  display:grid; place-items:center;
+  height:40px; padding:0 14px;
+  border-radius:10px; border:1px solid transparent;
+  color:#fff; cursor:pointer;
+  background:transparent; text-decoration:none; line-height:1;
+  transition:background .18s,color .18s,border-color .18s,box-shadow .20s,transform .08s;
+}
+.nav .icon-chip { height:40px; }
+.icon-chip:hover,.icon-chip.is-active {
+  background:var(--brand); border-color:var(--brand);
+  box-shadow:0 8px 18px rgba(123,63,242,.45),0 0 0 2px rgba(123,63,242,.25) inset;
+}
+.icon-chip.is-active {
+  background:#5e2bd6; color:#fff; border-color:#5e2bd6;
+  box-shadow:0 8px 18px rgba(94,43,214,.45),0 0 0 2px rgba(94,43,214,.25) inset;
+}
+.icon-chip:active { transform:scale(.98); }
+.icon-chip svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2; }
+
+/* Theme icon swap */
+.icon-stack{position:relative;width:20px;height:20px}
+.theme-icon{position:absolute;inset:0;transition:transform .25s ease,opacity .25s ease}
+.icon-sun{opacity:0;transform:rotate(90deg) scale(0)}
+.icon-moon{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-sun{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-moon{opacity:0;transform:rotate(-90deg) scale(0)}
+
+/* ===== Content ===== */
+.wrap { max-width:980px; margin:0 auto; padding:28px 16px 60px; }
+.hero {
+  position:relative; height:360px; border-radius:16px; overflow:hidden;
+  border:1px solid var(--line); margin:18px 0;
+}
+.hero img { width:100%; height:100%; object-fit:cover; display:block; }
+.hero::after {
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(0deg,rgba(0,0,0,.55),transparent 40%);
+}
+.h-meta{position:absolute;left:18px;bottom:16px;color:#fff}
+.kicker{font-size:12px;letter-spacing:.4px;font-weight:800}
+.h-title{margin:6px 0 0;font-size:32px}
+.article{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+h2{margin:22px 0 8px;font-size:22px}
+h3{margin:16px 0 6px;font-size:18px;color:#141414}
+.footer{margin-top:24px;text-align:center;opacity:.8}
+</style>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Action Cinema Reloaded in 2025","datePublished":"2025-04-05","author":{"@type":"Organization","name":"CineForge"},"image":["/assets/blog/action-2025.jpg"]}
+</script>
+</head><body>
+<header class="topbar">
+  <a class="brand" href="/"><span class="brand-accent">Cine</span>Forge</a>
+  <nav class="nav" aria-label="Primary">
+    <a class="icon-chip nav-chip" data-route="/" href="/">Home</a>
+    <a class="icon-chip nav-chip" data-route="/reels.html" href="/reels.html">Reels</a>
+    <a class="icon-chip nav-chip is-active" data-route="/blog.html" href="/blog.html">Blog</a>
+  </nav>
+   <div class="action-group" aria-label="Header actions">
+      <a href="/bookmarks.html" class="icon-chip" aria-label="Bookmarks" title="Bookmarks">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"/>
+        </svg>
+      </a>
+      <button id="theme-toggle" class="icon-chip" aria-label="Toggle theme" title="Toggle theme">
+        <span class="icon-stack" aria-hidden="true">
+          <svg class="theme-icon icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg class="theme-icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+        </span>
+      </button>
+    </div>
+  </header>
+
+<main class="wrap">
+  <section class="hero"><img src="/assets/samples/action2025.jpg" alt="Action production still">
+    <div class="h-meta"><div class="kicker">ACTION • APR 2025</div><h1 class="h-title">Action Cinema Reloaded in 2025</h1></div>
+  </section>
+
+  <article class="article">
+    <p>Action movies in 2025 feel different — and better. Directors are prioritizing <strong>readable geography</strong>, <strong>longer takes</strong>, and <strong>performer-first choreography</strong> over shaky quick-cuts. Below is a clean, image-free roundup (competitor-style) of the <em>most watchable action titles of 2025</em>, each with a short briefing on why it hits.</p>
+
+    <!-- Numbered list, title + one natural paragraph each -->
+    <h2>1. Mission: Impossible — Dead Reckoning Part Two</h2>
+    <p>Precision stuntwork and globe-trotting espionage return with an emphasis on practical rigs, breathless foot chases, and tight cat-and-mouse set pieces. Expect classic misdirection, a ruthless antagonist, and a finale built on real physics rather than pure CGI.</p>
+
+    <h2>2. Predator: Badlands</h2>
+    <p>The franchise strips back to survival logic: tracking, traps, and brutal hand-to-hand. The creature is shot like a presence, not a VFX showreel, and the desert setting turns every shadow into a threat.</p>
+
+    <h2>3. TRON: Ares</h2>
+    <p>Part neon-sci-fi, part full-contact actioner. The combat reads thanks to clear silhouettes and grounded wire work. When the action spills into the real world, the contrast gives every hit extra impact.</p>
+
+    <h2>4. The Running Man</h2>
+    <p>A ruthlessly topical update on the dystopian chase story. The geography is crystal clear — alleys, rooftops, transit tunnels — and the camera glides rather than shakes, making every sprint and tackle land.</p>
+
+    <h2>5. Mortal Kombat II</h2>
+    <p>Fights are choreographed to showcase distinct styles rather than blur together. Practical blood gags and sound design (bones, breath, fabric) do heavy lifting so the “fatalities” feel weighty, not cartoonish.</p>
+
+    <h2>6. The Accountant 2</h2>
+    <p>Cold, methodical shootouts return with a focus on reloads, cover, and angles. The action is character-driven: every burst of violence reveals something about discipline, training, or the cost of isolation.</p>
+
+    <h2>7. Jurassic World: Rebirth</h2>
+    <p>Adventure-leaning action with survival beats. Chase scenes use long lenses and foreground obstacles to sell speed, while the sound mix lets you feel mass and momentum of the creatures without drowning in noise.</p>
+
+    <h2>8. Extraction 3</h2>
+    <p>The series’ signature oner concept evolves with smarter stitching and better “micro geography.” You always know where the hero is relative to threats, which keeps the adrenaline high without confusion.</p>
+
+    <h2>9. Nobody 2</h2>
+    <p>Grimy, close-quarters brawling staged like problem solving. Props, improvised weapons, and sightlines all matter; humor pops as a release valve rather than undercutting the stakes.</p>
+
+    <h2>10. Red Notice 2</h2>
+    <p>Glossy heist-action that leans into capers, not chaos. Car chases read cleanly thanks to aerial establishing beats and minimal plate trickery; the film knows when to hold on a practical gag.</p>
+
+    <h2>11. Neon Havoc</h2>
+    <p>A stylish urban thriller: motorcycle pursuits through rain-slick streets, stairwell fights that use handrails and doorframes, and a finale staged across multiple floors with clear exits and blockades.</p>
+
+    <h2>12. Sky Marshal</h2>
+    <p>Airborne action with old-school model work and modern stabilization. Dogfights cut on movement, not simply on faces, so orientation is never lost even when jets crisscross the frame at speed.</p>
+
+    <h2>What’s working in 2025 action</h2>
+    <p><strong>Less cutting, more choreography.</strong> Directors shoot intent, not coverage. <strong>Practical effects</strong> handle dust, debris, and sparks; CG finishes edges. <strong>Sound design</strong> sells mass — tire squeal, footfall, gun report — while music stays out of the way during beats that need breath.</p>
+
+    <h2>Quick tips for viewers</h2>
+    <p>Choose premium screens with dual-laser projection for clearer night scenes. If you’re streaming, disable motion smoothing — these films are cut for 24fps cadence, and interpolation muddies geometry.</p>
+
+    <p class="footer">© <span id="year"></span> CineForge</p>
+  </article>
+</main>
+
+<script>
+(function(){const k='cf-theme',s=localStorage.getItem(k),
+p=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+document.documentElement.setAttribute('data-theme',s||p);
+document.getElementById('theme-toggle').onclick=()=>{const n=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';document.documentElement.setAttribute('data-theme',n);localStorage.setItem(k,n);};
+document.getElementById('year').textContent=new Date().getFullYear();})();
+</script>
+</body></html>

@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FPS Calculator — CineForge</title>
+  <meta name="description" content="Estimate gaming FPS for your PC. Select CPU, GPU, resolution, quality, and features like ray tracing or DLSS/FSR to see expected performance and bottlenecks." />
+  <link rel="icon" href="/assets/icons/favicon.ico" />
+  <link rel="stylesheet" href="/assets/css/style.css" />
+  <!-- Optional: set key here (or use localStorage 'cf-gemini-key') -->
+  <meta name="gemini-key" content="">
+
+  <style>
+:root {
+  --bg:#0b0b0e; --fg:#fff; --muted:#b7b9c2;
+  --card:#141414; --line:rgba(255,255,255,.08);
+  --brand:#7b3ff2;
+}
+:root[data-theme="light"] {
+  --bg:#f7f8fb; --fg:#111; --muted:#4a4d57;
+  --card:#fff; --line:#e2e6ef;
+}
+
+/* ===== Global resets ===== */
+*{box-sizing:border-box}
+html, body { height:100%; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font:16px/1.55 system-ui,Segoe UI,Roboto,Arial;
+}
+
+/* ===== Header (from index.html, fixed spacing) ===== */
+.topbar {
+  position:sticky; top:0; z-index:100;
+  background:#0b0b0e;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex; align-items:center; gap:14px;
+  padding:12px 16px; margin:0;
+}
+.brand {
+  color:#fff; text-decoration:none;
+  font-weight:900; font-size:20px;
+  flex:0 0 auto;
+}
+.brand-accent { color:var(--brand); }
+.topbar .nav {
+  flex:1 0 auto; display:flex; justify-content:center; align-items:center;
+  gap:8px; margin:0; padding:0;
+}
+.topbar .action-group {
+  flex:0 0 auto; margin-left:8px;
+  display:flex; gap:6px; align-items:center;
+  background:#101014; padding:4px;
+  border-radius:12px; border:1px solid rgba(255,255,255,.06);
+}
+
+/* ===== Chips ===== */
+.icon-chip {
+  display:grid; place-items:center;
+  height:40px; padding:0 14px;
+  border-radius:10px; border:1px solid transparent;
+  color:#fff; cursor:pointer;
+  background:transparent; text-decoration:none; line-height:1;
+  transition:background .18s,color .18s,border-color .18s,box-shadow .20s,transform .08s;
+}
+.nav .icon-chip { height:40px; }
+.icon-chip:hover,.icon-chip.is-active {
+  background:var(--brand); border-color:var(--brand);
+  box-shadow:0 8px 18px rgba(123,63,242,.45),0 0 0 2px rgba(123,63,242,.25) inset;
+}
+.icon-chip.is-active {
+  background:#5e2bd6; color:#fff; border-color:#5e2bd6;
+  box-shadow:0 8px 18px rgba(94,43,214,.45),0 0 0 2px rgba(94,43,214,.25) inset;
+}
+.icon-chip:active { transform:scale(.98); }
+.icon-chip svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2; }
+
+/* Theme icon swap */
+.icon-stack{position:relative;width:20px;height:20px}
+.theme-icon{position:absolute;inset:0;transition:transform .25s ease,opacity .25s ease}
+.icon-sun{opacity:0;transform:rotate(90deg) scale(0)}
+.icon-moon{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-sun{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-moon{opacity:0;transform:rotate(-90deg) scale(0)}
+
+/* layout */
+.rail{max-width:1120px;margin:0 auto;padding:0 18px}
+.hero .badge{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:12px;border:1px solid rgba(123,63,242,.35);background:#121520;color:#a7a3ff;font-weight:700;font-size:.82rem;margin:0 auto 8px}
+:root[data-theme="light"] .hero .badge{background:#faf8ff;color:#5e2bd6;border-color:#d8cfff}
+.hero .typo{font-size:clamp(34px,4vw,52px);font-weight:900;margin:6px 0;text-align:center}
+.hero .sub{max-width:920px;margin:4px auto 0;line-height:1.55;text-align:center}
+.fps-grid{display:grid;gap:22px;margin-top:28px;grid-template-columns:1fr}
+@media (min-width:980px){.fps-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.card{background:#0f1117;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:18px}
+:root[data-theme="light"] .card{background:#fff;border-color:rgba(0,0,0,.12)}
+h3.title{font-size:1.12rem;margin:0 0 10px}
+
+/* fields */
+.field{display:block;width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:#0f1117;color:#fff}
+:root[data-theme="light"] .field{background:#fff;color:#111;border-color:rgba(0,0,0,.12)}
+.row.two{display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:680px){.row.two{grid-template-columns:1fr 1fr}}
+label.small{font-size:.86rem;opacity:.9;margin:4px 0}
+.check-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.check{display:flex;gap:8px;align-items:center;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:#101218}
+:root[data-theme="light"] .check{background:#f7f7ff;border-color:#d8cfff;color:#222}
+
+/* buttons */
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;padding:12px 14px;border-radius:12px;border:1px solid transparent;cursor:pointer;text-decoration:none}
+.btn-primary{background:#7b3ff2;color:#fff;box-shadow:0 8px 20px rgba(123,63,242,.28)}
+.btn-primary:hover{filter:brightness(1.05)}
+
+/* status pill */
+.status-pill{display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);background:#0b0e14;border-radius:10px;padding:10px 12px;margin:6px 0 12px}
+.status-pill .ico{font-size:18px}
+.status-ok{color:#37d67a}
+.status-warn{color:#ffb74d}
+
+/* results */
+.results{display:flex;flex-direction:column;gap:10px}
+.result-box{border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px;background:#0b0e14}
+:root[data-theme="light"] .result-box{background:#fff;border-color:rgba(0,0,0,.12)}
+.big-num{font-size:40px;font-weight:900;line-height:1.1}
+.dim{opacity:.85}
+.kpi-grid{display:grid;gap:12px;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:10px}
+.kpi{border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px;text-align:center}
+
+/* simple tabs */
+.tabs{display:flex;gap:14px;margin:-6px 0 12px}
+.tab{padding:8px 12px;border:1px solid rgba(255,255,255,.12);border-radius:10px;cursor:pointer;background:#0b0e14}
+.tab.is-active{background:#181c27;border-color:#7b3ff2;box-shadow:0 0 0 2px rgba(123,63,242,.25) inset}
+.tabpanes > .pane{display:none}
+.tabpanes > .pane.is-active{display:block}
+
+/* info section */
+.info-grid{display:grid;gap:22px;margin-top:28px;grid-template-columns:1fr}
+@media (min-width:720px){.info-grid{grid-template-columns:repeat(2,1fr)}}
+.info-list{margin:8px 0 0 18px}
+
+/* footer quick palette (safety) */
+footer.footer{--sf-bg:#0a0a0a;--sf-fg:rgba(255,255,255,.90);--sf-dim:rgba(255,255,255,.68);--sf-border:rgba(255,255,255,.08);--sf-accent:#7b3ff2;--sf-accent-2:#9e7cff;background:var(--sf-bg);color:var(--sf-fg);border-top:1px solid var(--sf-border);margin-top:48px}
+footer.footer a{color:var(--sf-fg);text-decoration:none}
+footer.footer a:hover{color:var(--sf-accent-2)}
+.footer__grid{max-width:1120px;margin:0 auto;padding:40px 20px 20px;display:grid;grid-template-columns:1fr;gap:26px;text-align:center}
+@media (min-width:680px){.footer__grid{grid-template-columns:repeat(3,minmax(0,1fr));text-align:left}}
+@media (min-width:980px){.footer__grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.footer__brand .brand{font-weight:800;letter-spacing:.2px;display:inline-block;margin-bottom:6px}
+.footer__text{color:var(--sf-dim);max-width:720px;margin:4px auto 12px;line-height:1.55}
+.footer__social{display:flex;gap:12px;justify-content:center}
+@media (min-width:680px){.footer__social{justify-content:flex-start}}
+.footer__social a{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--sf-border);border-radius:10px;color:var(--sf-dim);transition:.18s}
+.footer__social a:hover{color:#fff;background:rgba(123,63,242,.16);border-color:rgba(123,63,242,.45);transform:translateY(-1px)}
+.footer__title{font-weight:700;letter-spacing:.3px;margin:4px 0 8px;color:#fff}
+.footer__list{list-style:none;margin:0;padding:0}
+.footer__list li{padding:6px 0}
+.footer__bottom{border-top:1px solid var(--sf-border);padding:14px 20px 26px;text-align:center}
+.footer__fine,.footer__copy{color:var(--sf-dim);margin:4px 0}
+  </style>
+
+  <!-- SEO -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebPage",
+    "name":"FPS Calculator — CineForge",
+    "description":"Estimate gaming FPS based on your CPU, GPU, resolution, and quality settings. Includes ray tracing and DLSS/FSR toggles with bottleneck detection.",
+    "url":"https://your-domain.example/tools/fps-calculator.html",
+    "isPartOf":{"@type":"WebSite","name":"CineForge"}
+  }
+  </script>
+</head>
+<body>
+
+
+  <!-- ===== Header ===== -->
+  <header class="topbar">
+  <a class="brand" href="/"><span class="brand-accent">Cine</span>Forge</a>
+  <nav class="nav" aria-label="Primary">
+    <a class="icon-chip nav-chip" data-route="/" href="/">Home</a>
+    <a class="icon-chip nav-chip" data-route="/reels.html" href="/reels.html">Reels</a>
+    <a class="icon-chip nav-chip is-active" data-route="/blog.html" href="/blog.html">Blog</a>  <a class="icon-chip nav-chip" data-route="/tools.html" href="/tools.html">Explore Tools</a>
+  </nav>
+  <div class="action-group" aria-label="Header actions">
+      <a href="/bookmarks.html" class="icon-chip" aria-label="Bookmarks" title="Bookmarks">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"/>
+        </svg>
+      </a>
+      <button id="theme-toggle" class="icon-chip" aria-label="Toggle theme" title="Toggle theme">
+        <span class="icon-stack" aria-hidden="true">
+          <svg class="theme-icon icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg class="theme-icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+        </span>
+      </button>
+    </div>
+  </header>
+
+<main class="container" style="padding-top:22px">
+  <section class="hero rail" aria-labelledby="fps-hero">
+    <div class="badge">🎮 <span>Gaming Performance</span></div>
+    <h1 id="fps-hero" class="typo">FPS <span class="brand-accent">Calculator</span></h1>
+    <p class="sub">Calculate your expected gaming performance and surface likely bottlenecks. Toggle Ray Tracing and DLSS/FSR to see realistic FPS changes.</p>
+  </section>
+
+  <section class="rail" style="margin-top:28px" aria-labelledby="calc-heading">
+    <h2 id="calc-heading" class="visually-hidden">Calculate Gaming FPS</h2>
+
+    <div class="fps-grid">
+      <!-- Left -->
+      <div class="card" role="region" aria-label="Quick Select">
+        <h3 class="title">Quick Select</h3>
+
+        <!-- Tabs -->
+        <div class="tabs" role="tablist" aria-label="Input mode">
+          <button id="tab-quick" class="tab is-active" role="tab" aria-selected="true" aria-controls="pane-quick">⚡ Quick Select</button>
+          <button id="tab-paste" class="tab" role="tab" aria-selected="false" aria-controls="pane-paste">📝 Paste your specs</button>
+        </div>
+
+        <div class="tabpanes">
+          <!-- Pane: Quick -->
+          <div id="pane-quick" class="pane is-active" role="tabpanel" aria-labelledby="tab-quick">
+            <form id="fps-form" novalidate>
+              <div class="row two">
+                <div>
+                  <label class="small" for="cpu">CPU</label>
+                  <select id="cpu" class="field">
+                    <option value="i5-12400">Intel Core i5-12400</option>
+                    <option value="i5-13400F">Intel Core i5-13400F</option>
+                    <option value="i7-13700KF">Intel Core i7-13700KF</option>
+                    <option value="r5-5600">AMD Ryzen 5 5600</option>
+                    <option value="r5-7600">AMD Ryzen 5 7600</option>
+                    <option value="r7-7800x3d">AMD Ryzen 7 7800X3D</option>
+                    <option value="r9-7950x">AMD Ryzen 9 7950X</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="small" for="gpu">Graphics Card</label>
+                  <select id="gpu" class="field">
+                    <option value="rtx3060">GeForce RTX 3060</option>
+                    <option value="rtx4060">GeForce RTX 4060</option>
+                    <option value="rtx4070">GeForce RTX 4070</option>
+                    <option value="rtx4080">GeForce RTX 4080</option>
+                    <option value="rtx4090">GeForce RTX 4090</option>
+                    <option value="rx6600">Radeon RX 6600</option>
+                    <option value="rx7700xt">Radeon RX 7700 XT</option>
+                    <option value="rx7800xt">Radeon RX 7800 XT</option>
+                    <option value="rx7900xtx">Radeon RX 7900 XTX</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row two" style="margin-top:8px">
+                <div>
+                  <label class="small" for="res">Resolution</label>
+                  <select id="res" class="field">
+                    <option value="1080" selected>1920×1080 (1080p)</option>
+                    <option value="1440">2560×1440 (1440p)</option>
+                    <option value="2160">3840×2160 (4K)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="small" for="qual">Graphics Quality</label>
+                  <select id="qual" class="field">
+                    <option value="low">Low</option>
+                    <option value="med">Medium</option>
+                    <option value="high" selected>High</option>
+                    <option value="ultra">Ultra</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row two" style="margin-top:8px">
+                <div>
+                  <label class="small" for="game">Video Game</label>
+                  <select id="game" class="field">
+                    <option value="cyberpunk">Cyberpunk 2077</option>
+                    <option value="rdr2">Red Dead Redemption 2</option>
+                    <option value="cs2">Counter-Strike 2</option>
+                    <option value="valorant">Valorant</option>
+                    <option value="fortnite">Fortnite</option>
+                    <option value="gtav">GTA V</option>
+                    <option value="eldenring">Elden Ring</option>
+                    <option value="apex">Apex Legends</option>
+                    <option value="pubg">PUBG: Battlegrounds</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="small" for="ramgb">RAM</label>
+                  <select id="ramgb" class="field">
+                    <option>8GB</option><option selected>16GB</option><option>32GB</option><option>64GB</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="check-row" style="margin-top:10px">
+                <label class="check"><input id="rt" type="checkbox"> <span>Ray Tracing</span></label>
+                <label class="check"><input id="dlss" type="checkbox"> <span>DLSS (NVIDIA)</span></label>
+                <label class="check"><input id="fsr" type="checkbox"> <span>FSR (AMD)</span></label>
+              </div>
+
+              <div style="margin-top:14px">
+                <button type="submit" class="btn btn-primary">🎯 Calculate FPS</button>
+                <button id="fps-clear" type="button" class="btn" style="margin-left:8px">✖ Clear</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Pane: Paste -->
+          <div id="pane-paste" class="pane" role="tabpanel" aria-labelledby="tab-paste">
+            <form id="fps-form-paste" novalidate>
+              <label class="small" for="paste">Paste your specs (CPU, GPU, RAM, resolution, quality, RT/DLSS/FSR, game)</label>
+              <textarea id="paste" class="field" rows="7" placeholder="CPU: Ryzen 5 7600
+GPU: RTX 4070
+RAM: 32GB
+Resolution: 2560x1440
+Quality: High
+Ray Tracing: Off
+DLSS: Quality
+Game: Cyberpunk 2077"></textarea>
+              <div style="margin-top:10px">
+                <button type="submit" class="btn btn-primary">🤖 Calculate via AI</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- status pill (shared look) -->
+        <div id="fps-status" class="status-pill" role="status" aria-live="polite">
+          <span class="ico">ℹ️</span>
+          <span id="fps-status-text">Fill the form and hit <b>Calculate FPS</b>.</span>
+        </div>
+      </div>
+
+      <!-- Right -->
+      <div class="card" role="region" aria-label="Results">
+        <h3 class="title">Your Power Result</h3>
+
+        <div id="results" class="results">
+          <div class="result-box">
+            <div class="big-num" id="fpsMain">Ready to calculate</div>
+            <div class="dim" id="fpsNote">Select your components and click <b>Calculate FPS</b> to see your results.</div>
+            <div class="kpi-grid" id="kpis" style="display:none">
+              <div class="kpi"><div class="dim">1% Low</div><div id="low1">—</div></div>
+              <div class="kpi"><div class="dim">Average</div><div id="avg">—</div></div>
+              <div class="kpi"><div class="dim">Peak</div><div id="peak">—</div></div>
+            </div>
+          </div>
+
+          <div class="result-box" id="bottleneckBox" style="display:none">
+            <strong>Bottleneck</strong>
+            <p id="bottleneck" class="dim" style="margin:6px 0 0">—</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Info -->
+  <section class="rail" style="margin-top:36px" aria-labelledby="learn-heading">
+    <h2 id="learn-heading" class="typo" style="font-size:1.9rem;text-align:center;margin-bottom:6px">Understanding Gaming Performance</h2>
+    <p class="sub">Learn how to optimize your PC for the best gaming experience.</p>
+
+    <div class="info-grid" style="margin-top:18px">
+      <div class="card">
+        <h3 class="title">⚡ Performance Analysis</h3>
+        <ul class="info-list">
+          <li><b>GPU:</b> Renders frames & visual effects</li>
+          <li><b>CPU:</b> Game logic, physics, AI</li>
+          <li><b>RAM:</b> Assets & texture streaming</li>
+          <li><b>Resolution:</b> Higher pixels need more GPU power</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="title">🧭 Bottleneck Detection</h3>
+        <p>We estimate balance between CPU and GPU and call out the likely limiter for your settings.</p>
+        <div class="result-box"><b>Tip:</b> If CPU-bound at 1080p, try higher resolution or higher graphics settings to shift the load to the GPU.</div>
+      </div>
+      <div class="card">
+        <h3 class="title">📐 Resolution Scaling</h3>
+        <ul class="info-list">
+          <li><b>1080p:</b> Balanced performance and clarity</li>
+          <li><b>1440p:</b> Better image quality, moderate FPS dip</li>
+          <li><b>4K:</b> Crispest image, heavy GPU demand</li>
+          <li><b>DLSS/FSR:</b> Upscaling to recover FPS with minimal quality loss</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="title">🎯 Performance Targets</h3>
+        <ul class="info-list">
+          <li><b>60 FPS:</b> Smooth baseline</li>
+          <li><b>120+ FPS:</b> Competitive gaming</li>
+          <li><b>144+ FPS:</b> Esports, high refresh</li>
+          <li><b>Ray Tracing:</b> Consider DLSS/FSR for playability</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="footer" id="site-footer" aria-labelledby="footer-heading">
+  <div class="footer__grid">
+    <div class="footer__brand">
+      <a class="brand" href="/" aria-label="CineForge home"><span class="brand-accent">Cine</span>Forge</a>
+      <p class="footer__text">AI-powered picks with trailers, region-aware watch options, and easy bookmarks — built on TMDB data and Gemini reasoning.</p>
+      <div class="footer__social" aria-label="Social links">
+        <a href="https://x.com" target="_blank" rel="noopener" aria-label="X">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18 2h3l-7.5 8.6L22 22h-6.8l-4.3-5.7L5.8 22H3l8.1-9.3L2 2h6.9l3.9 5.2L18 2zm-2.4 18h1.6L8.6 4H7L15.6 20z"/></svg>
+        </a>
+        <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.5-1.3-1.2-1.6-1.2-1.6-1-.7.1-.7.1-.7 1.1.1 1.6 1.2 1.6 1.2 1 1.7 2.6 1.2 3.2.9.1-.7.4-1.2.7-1.5-2.6-.3-5.3-1.3-5.3-6 0-1.3.5-2.3 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.3 11.3 0 0 1 6 0C17 4.7 18 5 18 5c.6 1.7.2 2.9.1 3.2.8.9 1.2 1.9 1.2 3.2 0 4.7-2.7 5.6-5.3 6 .4.3.7.9.7 1.8v2.6c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <nav class="footer__col" aria-label="Product">
+      <h3 class="footer__title">Product</h3>
+      <ul class="footer__list">
+        <li><a href="/">Home</a></li>
+        <li><a href="/reels.html">Reels</a></li>
+        <li><a href="/blog.html">Blog</a></li>
+        <li><a href="/bookmarks.html">Bookmarks</a></li>
+      </ul>
+    </nav>
+
+    <nav class="footer__col" aria-label="Features">
+      <h3 class="footer__title">Features</h3>
+      <ul class="footer__list">
+        <li><a href="/#welcome">Describe → AI Picks</a></li>
+        <li><a href="/#results">Title Search &amp; Typeahead</a></li>
+        <li><a href="/#filters">Genre Filters</a></li>
+        <li><a href="/#region-price-tools">Region &amp; Providers</a></li>
+      </ul>
+    </nav>
+
+    <nav class="footer__col" aria-label="Resources">
+      <h3 class="footer__title">Resources</h3>
+      <ul class="footer__list">
+        <li><a href="/privacy.html">Privacy</a></li>
+        <li><a href="/terms.html">Terms</a></li>
+        <li><a href="/sitemap.xml">Sitemap</a></li>
+        <li><a href="mailto:hello@cineforge.app">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="footer__bottom">
+    <p class="footer__fine">Powered by Gemini and The Movie Database (TMDB). Not affiliated with any streaming service.</p>
+    <p class="footer__copy">© <span id="year"></span> CineForge</p>
+  </div>
+</footer>
+
+<script>
+  // active nav highlight
+  (function(){
+    const here=(location.pathname.replace(/\/+$/,'')||'/');
+    document.querySelectorAll('.nav-chip').forEach(a=>{
+      const route=a.getAttribute('data-route');
+      if((route==='/'&&here==='/')||(route!=='/'&&here.endsWith(route))) a.classList.add('is-active');
+    });
+  })();
+
+  // theme toggle (persist)
+  (function(){
+    const root=document.documentElement, btn=document.getElementById('theme-toggle');
+    const preferred = localStorage.getItem('cf-theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light':'dark');
+    setTheme(preferred);
+    btn?.addEventListener('click',()=>setTheme(root.getAttribute('data-theme')==='light'?'dark':'light'));
+    function setTheme(t){ root.setAttribute('data-theme',t); localStorage.setItem('cf-theme',t); }
+    const y=document.getElementById('year'); if(y) y.textContent=new Date().getFullYear();
+  })();
+
+  // simple tabs
+  (function(){
+    const tQ=document.getElementById('tab-quick'), tP=document.getElementById('tab-paste');
+    const pQ=document.getElementById('pane-quick'), pP=document.getElementById('pane-paste');
+    const act=(tab)=> {
+      const quick = tab===tQ;
+      tQ.classList.toggle('is-active', quick); tQ.setAttribute('aria-selected', quick);
+      tP.classList.toggle('is-active', !quick); tP.setAttribute('aria-selected', !quick);
+      pQ.classList.toggle('is-active', quick);
+      pP.classList.toggle('is-active', !quick);
+    };
+    tQ.addEventListener('click',()=>act(tQ));
+    tP.addEventListener('click',()=>act(tP));
+  })();
+</script>
+<script>
+  window.CINEFORGE_GEMINI_KEY = 'AIzaSyB9Yy756zuyH55DnTBCGX6Y2HDDA41jKOo';
+  // optional: window.CINEFORGE_GEMINI_MODEL = 'gemini-2.0-flash';
+</script>
+<!-- Order matters: 1) gemini wrapper 2) page tool 3) global app -->
+<script type="module" src="/assets/js/tools/gemini.js"></script>
+<script type="module" src="/assets/js/tools/fps-calculator.js"></script>
+<script type="module" src="/assets/js/app.js"></script>
+</body>
+</html>

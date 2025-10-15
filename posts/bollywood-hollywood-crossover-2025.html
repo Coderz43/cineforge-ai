@@ -1,0 +1,196 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Bollywood × Hollywood Crossover 2025 — CineForge</title>
+<meta name="description" content="Why cross-industry collaborations are booming in 2025 and how productions are bridging workflows."/>
+<link rel="icon" href="/assets/icons/favicon.ico"/>
+<style>
+/* ===== Theme variables ===== */
+:root {
+  --bg:#0b0b0e; --fg:#fff; --muted:#b7b9c2;
+  --card:#141414; --line:rgba(255,255,255,.08);
+  --brand:#7b3ff2;
+}
+:root[data-theme="light"] {
+  --bg:#f7f8fb; --fg:#111; --muted:#4a4d57;
+  --card:#fff; --line:#e2e6ef;
+}
+
+/* ===== Global resets ===== */
+*{box-sizing:border-box}
+html, body { height:100%; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font:16px/1.55 system-ui,Segoe UI,Roboto,Arial;
+}
+
+/* ===== Header (from index.html, fixed spacing) ===== */
+.topbar {
+  position:sticky; top:0; z-index:100;
+  background:#0b0b0e;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex; align-items:center; gap:14px;
+  padding:12px 16px; margin:0;
+}
+.brand {
+  color:#fff; text-decoration:none;
+  font-weight:900; font-size:20px;
+  flex:0 0 auto;
+}
+.brand-accent { color:var(--brand); }
+.topbar .nav {
+  flex:1 0 auto; display:flex; justify-content:center; align-items:center;
+  gap:8px; margin:0; padding:0;
+}
+.topbar .action-group {
+  flex:0 0 auto; margin-left:8px;
+  display:flex; gap:6px; align-items:center;
+  background:#101014; padding:4px;
+  border-radius:12px; border:1px solid rgba(255,255,255,.06);
+}
+
+/* ===== Chips ===== */
+.icon-chip {
+  display:grid; place-items:center;
+  height:40px; padding:0 14px;
+  border-radius:10px; border:1px solid transparent;
+  color:#fff; cursor:pointer;
+  background:transparent; text-decoration:none; line-height:1;
+  transition:background .18s,color .18s,border-color .18s,box-shadow .20s,transform .08s;
+}
+.nav .icon-chip { height:40px; }
+.icon-chip:hover,.icon-chip.is-active {
+  background:var(--brand); border-color:var(--brand);
+  box-shadow:0 8px 18px rgba(123,63,242,.45),0 0 0 2px rgba(123,63,242,.25) inset;
+}
+.icon-chip.is-active {
+  background:#5e2bd6; color:#fff; border-color:#5e2bd6;
+  box-shadow:0 8px 18px rgba(94,43,214,.45),0 0 0 2px rgba(94,43,214,.25) inset;
+}
+.icon-chip:active { transform:scale(.98); }
+.icon-chip svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2; }
+
+/* Theme icon swap */
+.icon-stack{position:relative;width:20px;height:20px}
+.theme-icon{position:absolute;inset:0;transition:transform .25s ease,opacity .25s ease}
+.icon-sun{opacity:0;transform:rotate(90deg) scale(0)}
+.icon-moon{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-sun{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-moon{opacity:0;transform:rotate(-90deg) scale(0)}
+
+/* ===== Content ===== */
+.wrap { max-width:980px; margin:0 auto; padding:28px 16px 60px; }
+.hero {
+  position:relative; height:360px; border-radius:16px; overflow:hidden;
+  border:1px solid var(--line); margin:18px 0;
+}
+.hero img { width:100%; height:100%; object-fit:cover; display:block; }
+.hero::after {
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(0deg,rgba(0,0,0,.55),transparent 40%);
+}
+.h-meta{position:absolute;left:18px;bottom:16px;color:#fff}
+.kicker{font-size:12px;letter-spacing:.4px;font-weight:800}
+.h-title{margin:6px 0 0;font-size:32px}
+.article{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+h2{margin:22px 0 8px;font-size:22px}
+h3{margin:16px 0 6px;font-size:18px;color:#141414}
+.footer{margin-top:24px;text-align:center;opacity:.8}
+</style>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Bollywood × Hollywood Crossover 2025","datePublished":"2025-03-08","author":{"@type":"Organization","name":"CineForge"},"image":["/assets/blog/crossover-2025.jpg"]}
+</script>
+</head><body>
+<header class="topbar">
+  <a class="brand" href="/"><span class="brand-accent">Cine</span>Forge</a>
+  <nav class="nav" aria-label="Primary">
+    <a class="icon-chip nav-chip" href="/">Home</a>
+    <a class="icon-chip nav-chip" href="/reels.html">Reels</a>
+    <a class="icon-chip nav-chip is-active" href="/blog.html">Blog</a>
+  </nav>
+   <div class="action-group" aria-label="Header actions">
+      <a href="/bookmarks.html" class="icon-chip" aria-label="Bookmarks" title="Bookmarks">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"/>
+        </svg>
+      </a>
+      <button id="theme-toggle" class="icon-chip" aria-label="Toggle theme" title="Toggle theme">
+        <span class="icon-stack" aria-hidden="true">
+          <svg class="theme-icon icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg class="theme-icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+        </span>
+      </button>
+    </div>
+  </header>
+
+<main class="wrap">
+  <section class="hero"><img src="/assets/samples/fusion2025.jpg" alt="Crossover production still"/>
+    <div class="h-meta"><div class="kicker">FEATURE • MAR 2025</div><h1 class="h-title">Bollywood × Hollywood Crossover 2025</h1></div>
+  </section>
+
+  <article class="article">
+    <p>2025 is the year <strong>crossover cinema</strong> went mainstream. Indian studios and Hollywood banners are co-writing, co-financing, and co-marketing films designed to play both continents on day one. Below is a clean, image-free, magazine-style list of the most watchable cross-industry titles and why they matter.</p>
+
+    <h2>Top crossover projects of 2025</h2>
+
+    <h3>1. Midnight Tiger</h3>
+    <p>A stylized actioner with an Indian lead opposite a Hollywood ensemble, choreographed by stunt teams from the <em>John Wick</em> lineage. Shot between Mumbai and Los Angeles, it balances muscular set pieces with Bollywood-scale emotional beats.</p>
+
+    <h3>2. Mirage</h3>
+    <p>Atmospheric sci-fi co-financed by a US indie and South Indian VFX houses. Water simulations and futuristic docks built in Hyderabad; LA directors lean into performance-driven sci-fi rather than pure spectacle.</p>
+
+    <h3>3. Lotus Protocol</h3>
+    <p>A bilingual techno-thriller about AI surveillance. Two parallel edits — one for Indian multiplexes, one for US theaters — tweak humor/rhythm without changing the spine. Distributors are watching this model closely.</p>
+
+    <h3>4. Starfall Rebellion</h3>
+    <p>A Disney–India space opera where cultural fusion is text, not garnish. Bollywood stars share frames with marquee Hollywood talent; the marketing plan straddles Diwali season and US holiday corridors.</p>
+
+    <h3>5. The Raj Legacy</h3>
+    <p>Netflix’s prestige period play, split across Rajasthan palaces and London backlots. Hollywood costume and hair teams pair with Indian art departments to deliver scale that reads authentically on close-ups.</p>
+
+    <h3>6. Borderless Beats</h3>
+    <p>A musical drama merging Indian classical ragas with Western EDM. Choreographers from both industries craft numbers that cut cleanly for theaters and TikTok alike — a soundtrack-first strategy.</p>
+
+    <h3>7. Neon Haveli</h3>
+    <p>Lionsgate partners with a Mumbai startup for a neon-noir crime saga. Hollywood DPs light rain-soaked alleys; Bollywood writers weave family loyalties through the heist plot.</p>
+
+    <h3>8. Oceans Apart</h3>
+    <p>A climate-summit romance between an Indian scientist and an American journalist. Shot in New York and Kerala; backed by Amazon MGM Studios and T-Series for a synchronized global release.</p>
+
+    <h3>9. Crosswind Protocol</h3>
+    <p>An airline-hijack thriller using mixed crews: Indian second unit for stunt aviation, Hollywood editorial for split-second geography. Trailer tests showed unusually high four-quadrant appeal.</p>
+
+    <h3>10. Monsoon Comics</h3>
+    <p>A graphic-novel adaptation co-written by US and Indian creators. Practical suits over heavy CG give it a tactile, throwback superhero vibe that travels well in dubs and subs.</p>
+
+    <h2>Why crossovers are booming</h2>
+    <ul>
+      <li><strong>Two markets, one campaign:</strong> Shared trailers and release windows maximize word of mouth and reduce piracy.</li>
+      <li><strong>Talent flow is normalized:</strong> Stars like Priyanka Chopra, Dev Patel, and Dhanush have primed audiences for hybrid casts.</li>
+      <li><strong>Cost logic:</strong> Indian build quality + Hollywood finishing creates premium look at sane budgets.</li>
+      <li><strong>Streaming spillover:</strong> Theatrical crossovers spawn series/limited-doc tie-ins that keep IP warm.</li>
+    </ul>
+
+    <h2>Final thoughts</h2>
+    <p>The winning crossovers keep <em>flavor</em> — not sanded-off sameness. Bollywood rhythm plus Hollywood precision is a potent blend, and 2025 proves global stories work best when identity leads, not follows.</p>
+
+    <div class="footer">© <span id="year"></span> CineForge</div>
+  </article>
+</main>
+
+<script>
+(function(){
+  const k='cf-theme', s=localStorage.getItem(k),
+        pref=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+  document.documentElement.setAttribute('data-theme', s||pref);
+  document.getElementById('theme-toggle').onclick=()=> {
+    const next=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem(k, next);
+  };
+  document.getElementById('year').textContent=new Date().getFullYear();
+})();
+</script>
+</body></html>

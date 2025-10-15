@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Explore Tools — CineForge</title>
+  <meta name="description" content="Explore handy utilities for movie lovers and PC builders: Game Finder, Movie Finder, Code Generator, PC Build Calculator, PSU Calculator, and FPS Calculator." />
+  <link rel="icon" href="/assets/icons/favicon.ico" />
+  <link rel="preconnect" href="https://image.tmdb.org" />
+  <link rel="stylesheet" href="/assets/css/style.css" />
+
+  <style>
+    :root {
+  --bg:#0b0b0e; --fg:#fff; --muted:#b7b9c2;
+  --card:#141414; --line:rgba(255,255,255,.08);
+  --brand:#7b3ff2;
+}
+:root[data-theme="light"] {
+  --bg:#f7f8fb; --fg:#111; --muted:#4a4d57;
+  --card:#fff; --line:#e2e6ef;
+}
+
+/* ===== Global resets ===== */
+*{box-sizing:border-box}
+html, body { height:100%; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font:16px/1.55 system-ui,Segoe UI,Roboto,Arial;
+}
+
+/* ===== Header (from index.html, fixed spacing) ===== */
+.topbar {
+  position:sticky; top:0; z-index:100;
+  background:#0b0b0e;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex; align-items:center; gap:14px;
+  padding:12px 16px; margin:0;
+}
+.brand {
+  color:#fff; text-decoration:none;
+  font-weight:900; font-size:20px;
+  flex:0 0 auto;
+}
+.brand-accent { color:var(--brand); }
+.topbar .nav {
+  flex:1 0 auto; display:flex; justify-content:center; align-items:center;
+  gap:8px; margin:0; padding:0;
+}
+.topbar .action-group {
+  flex:0 0 auto; margin-left:8px;
+  display:flex; gap:6px; align-items:center;
+  background:#101014; padding:4px;
+  border-radius:12px; border:1px solid rgba(255,255,255,.06);
+}
+
+/* ===== Chips ===== */
+.icon-chip {
+  display:grid; place-items:center;
+  height:40px; padding:0 14px;
+  border-radius:10px; border:1px solid transparent;
+  color:#fff; cursor:pointer;
+  background:transparent; text-decoration:none; line-height:1;
+  transition:background .18s,color .18s,border-color .18s,box-shadow .20s,transform .08s;
+}
+.nav .icon-chip { height:40px; }
+.icon-chip:hover,.icon-chip.is-active {
+  background:var(--brand); border-color:var(--brand);
+  box-shadow:0 8px 18px rgba(123,63,242,.45),0 0 0 2px rgba(123,63,242,.25) inset;
+}
+.icon-chip.is-active {
+  background:#5e2bd6; color:#fff; border-color:#5e2bd6;
+  box-shadow:0 8px 18px rgba(94,43,214,.45),0 0 0 2px rgba(94,43,214,.25) inset;
+}
+.icon-chip:active { transform:scale(.98); }
+.icon-chip svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2; }
+
+/* Theme icon swap */
+.icon-stack{position:relative;width:20px;height:20px}
+.theme-icon{position:absolute;inset:0;transition:transform .25s ease,opacity .25s ease}
+.icon-sun{opacity:0;transform:rotate(90deg) scale(0)}
+.icon-moon{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-sun{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-moon{opacity:0;transform:rotate(-90deg) scale(0)}
+    /* --- Page layout --- */
+    .container{max-width:1120px;margin:0 auto;padding:22px 18px 36px}
+    .hero{padding-top:8px;text-align:center}
+    .typo{font-size:clamp(28px,3.4vw,44px);margin:4px 0 6px}
+    .sub{opacity:.76;max-width:740px;margin:0 auto}
+
+   /* Cards grid (3 per row on desktop) */
+.grid.tools-grid{
+  display:grid; gap:18px; margin-top:18px; grid-template-columns:1fr;
+}
+@media (min-width:720px){
+  .grid.tools-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (min-width:1040px){
+  .grid.tools-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+
+/* Centered cards */
+.card{
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+  border-radius:16px; border:2px solid rgba(255,255,255,.06);
+  background:#101218;
+  transition:transform .08s ease, border-color .18s ease, background .18s ease;
+  color:rgba(255,255,255,.90);
+}
+.card:hover{ transform:translateY(-2px); border-color:rgba(123,63,242,.35); background:#121520; }
+
+/* Light theme: ensure text is clearly visible */
+:root[data-theme="light"] .card{
+  background:#ffffff; border-color:rgba(0,0,0,.08); color:#111111;
+}
+:root[data-theme="light"] .card:hover{ background:#faf8ff; border-color:#d8cfff; }
+
+/* Icon centered */
+.tool-icon{
+  width:56px; height:56px; border-radius:14px; display:grid; place-items:center;
+  margin:16px auto 8px;
+  background:#1b1d24; color:#a2ff6b; border:1px solid rgba(255,255,255,.06); font-size:24px;
+}
+:root[data-theme="light"] .tool-icon{
+  background:#f4f6fb; border-color:rgba(17,17,17,.08); color:#5e2bd6;
+}
+
+/* Text centered */
+.meta{ padding:8px 16px 16px; text-align:center; width:100%; }
+
+.kicker{
+  text-transform:uppercase; letter-spacing:.18em; font-size:.72rem;
+  opacity:.70; margin-bottom:6px; color:inherit;
+}
+:root[data-theme="light"] .kicker{ opacity:.65; color:rgba(0,0,0,.66); }
+
+.title{
+  font-size:1.15rem; margin:2px 0 6px; line-height:1.25;
+  color:inherit; font-weight:800;
+}
+
+/* Force-center the description row (beats any global .row styles) */
+.card .row{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  margin:0 auto;
+  width:100%;
+  color:inherit;
+  opacity:.85;
+}
+:root[data-theme="light"] .card .row{ opacity:.90; color:#222; }
+
+/* keep the line comfortably narrow */
+.card .row span{ display:block; max-width:38ch; }
+
+
+    /* Footer (same palette as index) */
+    footer.footer{
+      --sf-bg:#0a0a0a;--sf-fg:rgba(255,255,255,.90);--sf-dim:rgba(255,255,255,.68);
+      --sf-border:rgba(255,255,255,.08);--sf-accent:#7b3ff2;--sf-accent-2:#9e7cff;
+      background:var(--sf-bg);color:var(--sf-fg);border-top:1px solid var(--sf-border);margin-top:48px
+    }
+    footer.footer a{color:var(--sf-fg);text-decoration:none}
+    footer.footer a:hover{color:var(--sf-accent-2)}
+    .footer__grid{max-width:1120px;margin:0 auto;padding:40px 20px 20px;display:grid;grid-template-columns:1fr;gap:26px;text-align:center}
+    @media (min-width:680px){.footer__grid{grid-template-columns:repeat(3,minmax(0,1fr));text-align:left}}
+    @media (min-width:980px){.footer__grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+    .footer__brand .brand{font-weight:800;letter-spacing:.2px;display:inline-block;margin-bottom:6px}
+    .footer__brand .brand .brand-accent{color:var(--sf-accent)}
+    .footer__text{color:var(--sf-dim);max-width:720px;margin:4px auto 12px;line-height:1.55}
+    .footer__social{display:flex;gap:12px;justify-content:center}
+    @media (min-width:680px){.footer__social{justify-content:flex-start}}
+    .footer__social a{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--sf-border);border-radius:10px;color:var(--sf-dim);transition:border-color .18s ease,color .18s ease,background .18s ease,transform .06s ease}
+    .footer__social a:hover{color:#fff;background:rgba(123,63,242,.16);border-color:rgba(123,63,242,.45);transform:translateY(-1px)}
+    .footer__title{font-weight:700;letter-spacing:.3px;margin:4px 0 8px;color:#fff}
+    .footer__list{list-style:none;margin:0;padding:0}
+    .footer__list li{padding:6px 0}
+    .footer__bottom{border-top:1px solid var(--sf-border);padding:14px 20px 26px;text-align:center}
+    .footer__fine,.footer__copy{color:var(--sf-dim);margin:4px 0}
+  </style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/"><span class="brand-accent">Cine</span>Forge</a>
+  <nav class="nav" aria-label="Primary">
+  <a class="icon-chip nav-chip" data-route="/" href="/">Home</a>
+  <a class="icon-chip nav-chip" data-route="/reels.html" href="/reels.html">Reels</a>
+  <a class="icon-chip nav-chip" data-route="/blog.html" href="/blog.html">Blog</a>
+  <a class="icon-chip nav-chip" data-route="/tools.html" href="/tools.html">Explore Tools</a>
+</nav>
+  <div class="action-group" aria-label="Header actions">
+    <a href="/bookmarks.html" class="icon-chip" aria-label="Bookmarks" title="Bookmarks">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"/></svg>
+    </a>
+    <button id="theme-toggle" class="icon-chip" aria-label="Toggle theme" title="Toggle theme">
+      <span class="icon-stack" aria-hidden="true">
+        <svg class="theme-icon icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg class="theme-icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+      </span>
+    </button>
+  </div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <h1 class="typo">Explore Other Tools</h1>
+    <p class="sub">Handy utilities that pair nicely with CineForge. More coming soon.</p>
+  </section>
+
+  <!-- Tools grid (3 per row on desktop) -->
+  <section class="grid tools-grid" aria-label="Tools">
+    <!-- 1 -->
+    <a class="card" href="/tools/game-finder.html" aria-label="Game Finder">
+      <div class="tool-icon">🎮</div>
+      <div class="meta">
+        <div class="kicker">Utility</div>
+        <h3 class="title">Game Finder</h3>
+        <div class="row"><span>Discover PC/Console games by vibe.</span></div>
+      </div>
+    </a>
+
+    <!-- 2 -->
+    <a class="card" href="/tools/movie-finder.html" aria-label="Movie Finder">
+      <div class="tool-icon">🎬</div>
+      <div class="meta">
+        <div class="kicker">Utility</div>
+        <h3 class="title">Movie Finder</h3>
+        <div class="row"><span>Browse by mood &amp; tags—fast.</span></div>
+      </div>
+    </a>
+
+    <!-- 3 -->
+    <a class="card" href="/tools/code-generator.html" aria-label="Code Generator">
+      <div class="tool-icon">🧩</div>
+      <div class="meta">
+        <div class="kicker">Dev</div>
+        <h3 class="title">Code Generator</h3>
+        <div class="row"><span>Quick snippets &amp; stubs.</span></div>
+      </div>
+    </a>
+
+    <!-- 4 -->
+    <a class="card" href="/tools/pc-build-calculator.html" aria-label="PC Build Calculator">
+      <div class="tool-icon">🧮</div>
+      <div class="meta">
+        <div class="kicker">Hardware</div>
+        <h3 class="title">PC Build Calculator</h3>
+        <div class="row"><span>Plan parts &amp; balance budgets.</span></div>
+      </div>
+    </a>
+
+    <!-- 5 -->
+    <a class="card" href="/tools/psu-calculator.html" aria-label="PC Power Supply Calculator">
+      <div class="tool-icon">⚡</div>
+      <div class="meta">
+        <div class="kicker">Hardware</div>
+        <h3 class="title">PC Power Supply Calculator</h3>
+        <div class="row"><span>Estimate safe PSU wattage.</span></div>
+      </div>
+    </a>
+
+    <!-- 6 -->
+    <a class="card" href="/tools/fps-calculator.html" aria-label="FPS Calculator">
+      <div class="tool-icon">🎯</div>
+      <div class="meta">
+        <div class="kicker">Hardware</div>
+        <h3 class="title">FPS Calculator</h3>
+        <div class="row"><span>Predict performance by setup.</span></div>
+      </div>
+    </a>
+  </section>
+
+  <!-- SEO copy under tools -->
+  <section class="container" style="margin-top:34px">
+    <h2 style="margin:0 0 8px">CineForge Toolset: Quick Overview</h2>
+    <p class="sub" style="text-align:left;max-width:860px">
+      Explore purpose-built utilities for gamers, film fans, and PC builders. Each tool is lightweight, fast, and tuned for accuracy.
+    </p>
+
+    <h3 style="margin:18px 0 8px">Game Finder — discover titles by mood &amp; genre</h3>
+    <p>Find PC and console games that match your vibe. Filter by genre, platform, and play-style to build a backlog that you’ll actually play.</p>
+
+    <h3 style="margin:18px 0 8px">Movie Finder — mood-based film search</h3>
+    <p>Describe the feel (e.g., “uplifting sci-fi with heart”) and jump straight to relevant titles. Perfect for quick movie nights and niche deep dives.</p>
+
+    <h3 style="margin:18px 0 8px">Code Generator — instant snippets</h3>
+    <p>Spin up boilerplate, utility functions, or API stubs in seconds. Great for prototypes, demos, and learning by doing.</p>
+
+    <h3 style="margin:18px 0 8px">PC Build Calculator — parts &amp; budgets</h3>
+    <p>Estimate total build costs, balance CPU/GPU, and avoid bottlenecks. Tailored suggestions for gaming, streaming, and editing.</p>
+
+    <h3 style="margin:18px 0 8px">PSU Calculator — safe wattage estimates</h3>
+    <p>Right-size your power supply with headroom for future upgrades. Prevent instability, coil whine, and unnecessary over-spend.</p>
+
+    <h3 style="margin:18px 0 8px">FPS Calculator — performance by setup</h3>
+    <p>Predict FPS for popular titles based on your CPU, GPU, and resolution. Plan settings before you buy or tweak.</p>
+  </section>
+</main>
+
+<!-- Footer (same as index) -->
+<footer class="footer" id="site-footer" aria-labelledby="footer-heading">
+  
+
+  <div class="footer__grid">
+    <div class="footer__brand">
+      <a class="brand" href="/" aria-label="CineForge home"><span class="brand-accent">Cine</span>Forge</a>
+      <p class="footer__text">AI-powered picks with trailers, region-aware watch options, and easy bookmarks — built on TMDB data and Gemini reasoning.</p>
+      <div class="footer__social" aria-label="Social links">
+        <a href="https://x.com" target="_blank" rel="noopener" aria-label="X">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18 2h3l-7.5 8.6L22 22h-6.8l-4.3-5.7L5.8 22H3l8.1-9.3L2 2h6.9l3.9 5.2L18 2zm-2.4 18h1.6L8.6 4H7L15.6 20z"/></svg>
+        </a>
+        <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.5-1.3-1.2-1.6-1.2-1.6-1-.7.1-.7.1-.7 1.1.1 1.6 1.2 1.6 1.2 1 1.7 2.6 1.2 3.2.9.1-.7.4-1.2.7-1.5-2.6-.3-5.3-1.3-5.3-6 0-1.3.5-2.3 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.3 11.3 0 0 1 6 0C17 4.7 18 5 18 5c.6 1.7.2 2.9.1 3.2.8.9 1.2 1.9 1.2 3.2 0 4.7-2.7 5.6-5.3 6 .4.3.7.9.7 1.8v2.6c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <nav class="footer__col" aria-label="Product">
+      <h3 class="footer__title">Product</h3>
+      <ul class="footer__list">
+        <li><a href="/">Home</a></li>
+        <li><a href="/reels.html">Reels</a></li>
+        <li><a href="/blog.html">Blog</a></li>
+        <li><a href="/bookmarks.html">Bookmarks</a></li>
+      </ul>
+    </nav>
+
+    <nav class="footer__col" aria-label="Features">
+      <h3 class="footer__title">Features</h3>
+      <ul class="footer__list">
+        <li><a href="/#welcome">Describe → AI Picks</a></li>
+        <li><a href="/#results">Title Search &amp; Typeahead</a></li>
+        <li><a href="/#filters">Genre Filters</a></li>
+        <li><a href="/#region-price-tools">Region &amp; Providers</a></li>
+      </ul>
+    </nav>
+
+    <nav class="footer__col" aria-label="Resources">
+      <h3 class="footer__title">Resources</h3>
+      <ul class="footer__list">
+        <li><a href="/privacy.html">Privacy</a></li>
+        <li><a href="/terms.html">Terms</a></li>
+        <li><a href="/sitemap.xml">Sitemap</a></li>
+        <li><a href="mailto:hello@cineforge.app">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="footer__bottom">
+    <p class="footer__fine">Powered by Gemini and The Movie Database (TMDB). Not affiliated with any streaming service.</p>
+    <p class="footer__copy">© <span id="year"></span> CineForge</p>
+  </div>
+</footer>
+
+<script>
+  // Active nav chip
+  (function(){
+    const here = (location.pathname.replace(/\/+$/, '') || '/');
+    document.querySelectorAll('.nav-chip').forEach(a=>{
+      const route = a.getAttribute('data-route');
+      if ((route === '/' && here === '/') || (route !== '/' && here.endsWith(route))) a.classList.add('is-active');
+    });
+  })();
+
+  // Theme init + switch (persisted)
+  (function(){
+    const el = document.documentElement;
+    const sw = document.getElementById('theme-switch');
+    const label = document.getElementById('theme-label');
+
+    const preferred = localStorage.getItem('cf-theme')
+      || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+
+    function setTheme(t){
+      el.setAttribute('data-theme', t);
+      localStorage.setItem('cf-theme', t);
+      sw.checked = (t === 'light');
+      label.textContent = t === 'light' ? 'Light' : 'Dark';
+    }
+
+    setTheme(preferred);
+    sw.addEventListener('change', ()=> setTheme(sw.checked ? 'light' : 'dark'));
+  })();
+
+  // Footer year
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+<!-- Your global JS if any -->
+<script type="module" src="/assets/js/app.js"></script>
+</body>
+</html>

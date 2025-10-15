@@ -1,0 +1,244 @@
+<!-- reels.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CineForge — Reels</title>
+
+  <!-- INLINE CSS -->
+  <style>
+/* Reset like index so the header is flush to the edges */
+html, body { margin: 0; padding: 0; }
+* { box-sizing: border-box; }
+
+/* ===== Topbar (same as index/bookmarks) ===== */
+/* ===== Topbar ===== */
+.topbar {
+  background:#0b0b0e!important;
+  color:#fff!important;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 16px;
+  position: relative;  /* sticky hata diya */
+  top: auto;
+  z-index: auto;
+}
+
+.brand {
+  color:#fff;
+  text-decoration:none;
+  font-weight:800;
+  letter-spacing:.2px;
+}
+.brand-accent { color:#7b3ff2 }
+.nav { display:flex; gap:8px; position: relative; }
+
+/* ===== Action buttons ===== */
+.action-group {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:#101014;
+  padding:4px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.06);
+}
+.icon-chip {
+  display:grid;
+  place-items:center;
+  width:44px;
+  height:40px;
+  border-radius:10px;
+  cursor:pointer;
+  border:1px solid transparent;
+  background:transparent;
+  color:#ffffff;
+  transition:background .18s ease,color .18s ease,border-color .18s ease,box-shadow .20s ease,transform .08s ease;
+  text-decoration:none;
+}
+.icon-chip:hover,
+.icon-chip:focus-visible {
+  background:#5e2bd6;
+  color:#ffffff;
+  border-color:#5e2bd6;
+  box-shadow:0 8px 18px rgba(94,43,214,.45),0 0 0 2px rgba(94,43,214,.25) inset;
+  outline:0;
+}
+.icon-chip:active { transform:scale(.98) }
+.icon-chip svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2 }
+.icon-stack { position:relative; width:20px; height:20px }
+.theme-icon { position:absolute; inset:0; transition:transform .25s ease,opacity .25s ease }
+.icon-sun { opacity:0; transform:rotate(90deg) scale(0) }
+.icon-moon { opacity:1; transform:rotate(0) scale(1) }
+:root[data-theme="light"] .icon-sun { opacity:1; transform:rotate(0) scale(1) }
+:root[data-theme="light"] .icon-moon { opacity:0; transform:rotate(-90deg) scale(0) }
+.nav .nav-chip { width:auto; height:40px; padding:0 14px; border-radius:10px }
+.icon-chip.is-active {
+  background:#5e2bd6;
+  color:#fff;
+  border-color:#5e2bd6;
+  box-shadow:0 8px 18px rgba(94,43,214,.45),0 0 0 2px rgba(94,43,214,.25) inset;
+}
+
+/* ===== Reels page ===== */
+.is-hidden { display:none!important }
+:root { --topbar-h:64px; }
+:root {
+  --reels-bg:#0b0b0b;
+  --reels-fg:#ececec;
+  --reels-muted:#b9b9b9;
+  --reels-card:#141414;
+  --reels-accent:#7c5cff;
+  --reels-chip:#1a1b20;
+  --reels-border:#212229;
+}
+.reels-page {
+  background:var(--reels-bg);
+  color:var(--reels-fg);
+  font:16px/1.5 system-ui, Segoe UI, Roboto, Inter, Arial;
+  min-height:100dvh;
+}
+.reels-wrap {
+  max-width:560px;
+  margin:0 auto;
+  padding:14px 12px 80px;
+}
+.reels-toolbar {
+  position: relative; /* sticky/fixed hata diya */
+  top: auto;
+  z-index: auto;
+  background: linear-gradient(180deg, rgba(8,8,10,.95), rgba(8,8,10,.75));
+  padding: 10px;
+  border: 1px solid var(--reels-border);
+  border-radius: 14px;
+  backdrop-filter: blur(6px);
+}
+
+
+.reels-chips{display:flex;gap:8px;overflow:auto;padding:2px 2px 6px;scrollbar-width:thin}
+.reels-chip{padding:7px 12px;border-radius:999px;background:var(--reels-chip);border:1px solid var(--reels-border);font-size:13px;white-space:nowrap;cursor:pointer;user-select:none;color:#e7e7e7}
+/* Selected chip — same purple as header */
+.reels-chip.is-on{
+  background:#5e2bd6; border-color:#5e2bd6; color:#fff;
+  box-shadow:0 8px 18px rgba(94,43,214,.35), 0 0 0 2px rgba(94,43,214,.20) inset;
+}
+.reels-sort{margin-top:8px;display:flex;gap:8px;align-items:center;color:var(--reels-muted);font-size:14px}
+.reels-sort select{background:#0f0f13;color:var(--reels-fg);border:1px solid var(--reels-border);border-radius:10px;padding:6px 10px}
+.reels-feed{margin-top:14px;display:flex;flex-direction:column;gap:20px}
+
+.reels-card{background:var(--reels-card);border:1px solid var(--reels-border);border-radius:16px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.25)}
+.reels-head{display:flex;align-items:center;gap:10px;padding:10px 12px}
+.reels-poster{width:36px;height:36px;border-radius:8px;background:#222;flex:0 0 auto;overflow:hidden}
+.reels-poster img{width:100%;height:100%;object-fit:cover;display:block}
+.reels-title{font-weight:700}
+.reels-meta{color:var(--reels-muted);font-size:13px;margin-top:2px}
+
+.reels-video-wrap{position:relative;background:#000}
+.reels-video{width:100%;height:60vh;max-height:680px;display:block;background:#000}
+/* make YouTube iframe fill the slot */
+.reels-video iframe, .reels-video > div { width:100%; height:60vh; max-height:680px; }
+.video-fallback{position:absolute;inset:0;display:grid;place-items:center;color:#c7c7c7;font-size:14px;background:linear-gradient(180deg,#131318,#0c0c10)}
+.reels-overlay{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:space-between;padding:10px;pointer-events:none}
+.reels-actions-col{display:flex;flex-direction:row;gap:10px;pointer-events:auto}
+.reels-cta{background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(6px);color:#fff;padding:8px 10px;border-radius:12px;cursor:pointer;font-size:14px}
+.reels-cta:hover{background:rgba(0,0,0,.7)}
+.reels-tags{display:flex;gap:6px;flex-wrap:wrap}
+.reels-tag{background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.1);padding:5px 8px;border-radius:999px;font-size:12px}
+
+.reels-ops{display:flex;gap:8px;padding:10px 12px 12px;border-top:1px solid var(--reels-border);flex-wrap:wrap}
+.reels-op{background:#0f0f13;border:1px solid var(--reels-border);color:var(--reels-fg);border-radius:10px;padding:8px 10px;font-size:14px;cursor:pointer}
+.reels-op:hover{border-color:var(--reels-accent)}
+
+/* ===== Light theme overrides (fix visibility) ===== */
+:root[data-theme="light"] {
+  --reels-bg:#f7f8fb; --reels-fg:#111; --reels-muted:#555; --reels-card:#fff;
+  --reels-chip:#eef0f6; --reels-border:#e2e6ef;
+}
+:root[data-theme="light"] .reels-toolbar{background:#ffffffcc}
+:root[data-theme="light"] .reels-chip{color:#111}
+:root[data-theme="light"] .reels-chip.is-on{
+  background:#5e2bd6; border-color:#5e2bd6; color:#fff;
+  box-shadow:0 8px 18px rgba(94,43,214,.25), 0 0 0 2px rgba(94,43,214,.15) inset;
+}
+:root[data-theme="light"] .reels-sort select{background:#fff;color:#111;border-color:#d9deea}
+:root[data-theme="light"] .reels-tag{background:#f2f4fa;border-color:#e2e6ef;color:#111}
+/* Bottom action pills readable in light */
+:root[data-theme="light"] .reels-op{
+  background:#ffffff; color:#111; border-color:#d9deea;
+  box-shadow:0 2px 8px rgba(17,17,17,.06);
+}
+:root[data-theme="light"] .reels-op:hover{ border-color:#5e2bd6; }
+  </style>
+</head>
+
+<body class="reels-page">
+  <!-- ===== Header (unchanged) ===== -->
+<header class="topbar">
+  <a class="brand" href="/"><span class="brand-accent">Cine</span>Forge</a>
+  <nav class="nav" aria-label="Primary">
+  <a class="icon-chip nav-chip" data-route="/" href="/">Home</a>
+  <a class="icon-chip nav-chip" data-route="/reels.html" href="/reels.html">Reels</a>
+  <a class="icon-chip nav-chip" data-route="/blog.html" href="/blog.html">Blog</a>
+  <a class="icon-chip nav-chip" data-route="/tools.html" href="/tools.html">Explore Tools</a>
+</nav>
+  <div class="action-group" aria-label="Header actions">
+    <a href="/bookmarks.html" class="icon-chip" aria-label="Bookmarks" title="Bookmarks">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"/></svg>
+    </a>
+    <button id="theme-toggle" class="icon-chip" aria-label="Toggle theme" title="Toggle theme">
+      <span class="icon-stack" aria-hidden="true">
+        <svg class="theme-icon icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg class="theme-icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+      </span>
+    </button>
+  </div>
+</header>
+
+  <!-- ===== Toolbar ===== -->
+  <section class="reels-wrap">
+    <div class="reels-toolbar" id="reelsToolbar">
+      <div class="reels-chips" id="reelsChips"></div>
+      <div class="reels-sort">
+        <span>Sort:</span>
+        <select id="reelsSort">
+          <option value="trending">Trending</option>
+          <option value="newest">Newest</option>
+          <option value="top">Top Rated</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ===== Feed ===== -->
+    <div class="reels-feed" id="reelsFeed"></div>
+  </section>
+
+  <!-- ===== JS (theme + dynamic reels) ===== -->
+  <script type="module">
+    // Theme persistence + active tab highlight
+    (function(){
+      const KEY='cf-theme';
+      const saved=localStorage.getItem(KEY);
+      const prefers=window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light':'dark';
+      const theme=saved || prefers;
+      document.documentElement.setAttribute('data-theme', theme);
+      document.getElementById('theme-toggle').addEventListener('click',()=>{
+        const next = (document.documentElement.getAttribute('data-theme')==='light')?'dark':'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem(KEY, next);
+      });
+      const here = location.pathname.replace(/\/+$/,'') || '/';
+      document.querySelectorAll('.nav-chip').forEach(a=>{
+        const route=a.getAttribute('data-route');
+        if((route==='/' && here==='/') || (route!=='/' && here.endsWith(route))) a.classList.add('is-active');
+      });
+    })();
+
+    // Reels page (TMDB + YouTube)
+    import { initReels } from "/assets/js/reels-page.js";
+    initReels();
+  </script>
+</body>
+</html>

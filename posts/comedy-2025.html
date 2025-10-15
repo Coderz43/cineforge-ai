@@ -1,0 +1,186 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Comedy in 2025: Laughter Across Borders — CineForge</title>
+<meta name="description" content="From satire to slice-of-life, comedies are uniting audiences in 2025—formats, timing, and what actually gets laughs."/>
+<link rel="icon" href="/assets/icons/favicon.ico"/>
+<style>
+/* ===== Theme variables ===== */
+:root {
+  --bg:#0b0b0e; --fg:#fff; --muted:#b7b9c2;
+  --card:#141414; --line:rgba(255,255,255,.08);
+  --brand:#7b3ff2;
+}
+:root[data-theme="light"] {
+  --bg:#f7f8fb; --fg:#111; --muted:#4a4d57;
+  --card:#fff; --line:#e2e6ef;
+}
+
+/* ===== Global resets ===== */
+*{box-sizing:border-box}
+html, body { height:100%; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font:16px/1.55 system-ui,Segoe UI,Roboto,Arial;
+}
+
+/* ===== Header (from index.html, fixed spacing) ===== */
+.topbar {
+  position:sticky; top:0; z-index:100;
+  background:#0b0b0e;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex; align-items:center; gap:14px;
+  padding:12px 16px; margin:0;
+}
+.brand {
+  color:#fff; text-decoration:none;
+  font-weight:900; font-size:20px;
+  flex:0 0 auto;
+}
+.brand-accent { color:var(--brand); }
+.topbar .nav {
+  flex:1 0 auto; display:flex; justify-content:center; align-items:center;
+  gap:8px; margin:0; padding:0;
+}
+.topbar .action-group {
+  flex:0 0 auto; margin-left:8px;
+  display:flex; gap:6px; align-items:center;
+  background:#101014; padding:4px;
+  border-radius:12px; border:1px solid rgba(255,255,255,.06);
+}
+
+/* ===== Chips ===== */
+.icon-chip {
+  display:grid; place-items:center;
+  height:40px; padding:0 14px;
+  border-radius:10px; border:1px solid transparent;
+  color:#fff; cursor:pointer;
+  background:transparent; text-decoration:none; line-height:1;
+  transition:background .18s,color .18s,border-color .18s,box-shadow .20s,transform .08s;
+}
+.nav .icon-chip { height:40px; }
+.icon-chip:hover,.icon-chip.is-active {
+  background:var(--brand); border-color:var(--brand);
+  box-shadow:0 8px 18px rgba(123,63,242,.45),0 0 0 2px rgba(123,63,242,.25) inset;
+}
+.icon-chip.is-active {
+  background:#5e2bd6; color:#fff; border-color:#5e2bd6;
+  box-shadow:0 8px 18px rgba(94,43,214,.45),0 0 0 2px rgba(94,43,214,.25) inset;
+}
+.icon-chip:active { transform:scale(.98); }
+.icon-chip svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2; }
+
+/* Theme icon swap */
+.icon-stack{position:relative;width:20px;height:20px}
+.theme-icon{position:absolute;inset:0;transition:transform .25s ease,opacity .25s ease}
+.icon-sun{opacity:0;transform:rotate(90deg) scale(0)}
+.icon-moon{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-sun{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-moon{opacity:0;transform:rotate(-90deg) scale(0)}
+
+/* ===== Content ===== */
+.wrap { max-width:980px; margin:0 auto; padding:28px 16px 60px; }
+.hero {
+  position:relative; height:360px; border-radius:16px; overflow:hidden;
+  border:1px solid var(--line); margin:18px 0;
+}
+.hero img { width:100%; height:100%; object-fit:cover; display:block; }
+.hero::after {
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(0deg,rgba(0,0,0,.55),transparent 40%);
+}
+.h-meta{position:absolute;left:18px;bottom:16px;color:#fff}
+.kicker{font-size:12px;letter-spacing:.4px;font-weight:800}
+.h-title{margin:6px 0 0;font-size:32px}
+.article{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+h2{margin:22px 0 8px;font-size:22px}
+h3{margin:16px 0 6px;font-size:18px;color:#141414}
+.footer{margin-top:24px;text-align:center;opacity:.8}
+</style>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Comedy in 2025: Laughter Across Borders","datePublished":"2025-06-04","author":{"@type":"Organization","name":"CineForge"},"image":["/assets/blog/comedy-2025.jpg"]}
+</script>
+</head><body>
+<header class="topbar">
+  <a class="brand" href="/"><span class="brand-accent">Cine</span>Forge</a>
+  <nav class="nav" aria-label="Primary">
+    <a class="icon-chip nav-chip" data-route="/" href="/">Home</a>
+    <a class="icon-chip nav-chip" data-route="/reels.html" href="/reels.html">Reels</a>
+    <a class="icon-chip nav-chip is-active" data-route="/blog.html" href="/blog.html">Blog</a>
+  </nav>
+  <div class="action-group" aria-label="Header actions">
+      <a href="/bookmarks.html" class="icon-chip" aria-label="Bookmarks" title="Bookmarks">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"/>
+        </svg>
+      </a>
+      <button id="theme-toggle" class="icon-chip" aria-label="Toggle theme" title="Toggle theme">
+        <span class="icon-stack" aria-hidden="true">
+          <svg class="theme-icon icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg class="theme-icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+        </span>
+      </button>
+    </div>
+  </header>
+<main class="wrap">
+  <section class="hero"><img src="/assets/samples/comedy2025.jpg" alt="Comedy still 2025">
+    <div class="h-meta"><div class="kicker">COMEDY • JUN 2025</div><h1 class="h-title">Comedy in 2025: Laughter Across Borders</h1></div>
+  </section>
+
+  <article class="article">
+    <p>2025 is loaded with comedies that feel personal yet play globally. Instead of random gags, this year’s funniest films pull laughs from <strong>character choices</strong>, <strong>specific culture</strong>, and <strong>clean timing</strong>. If you’re hunting for feel-good watches, here are the titles audiences are buzzing about — presented in a simple, image-free, magazine list just like our competitor’s format.</p>
+
+    <!-- Numbered list: title + short paragraph each -->
+    <h2>1. Wedding Season Reloaded</h2>
+    <p>An overbooked Indian wedding collides with a destination ceremony in Italy, forcing two feuding planners to share vendors, venues, and one very stubborn brass band. The jokes come from logistics mayhem and family politics, not slapstick overload.</p>
+
+    <h2>2. Roommates with Benefits (of Doubt)</h2>
+    <p>A straight-laced auditor moves in with an improv comic after a housing glitch; they end up “rehearsing” life admin like it’s stage scenes. It’s a gentle, witty odd-couple piece about rules, risks, and rent.</p>
+
+    <h2>3. CEO by Accident</h2>
+    <p>When a food delivery rider is mistakenly made acting CEO for one day due to a HR system bug, his common-sense fixes actually work — until the board wants him to keep pretending. Office satire that stays warm.</p>
+
+    <h2>4. Passport Please</h2>
+    <p>A romance blooms between a visa officer and a serial travel-story exaggerator who can’t stop embellishing. The film mines truth vs. performance with brisk dialogue and visual punchlines at airport security.</p>
+
+    <h2>5. The Family Group</h2>
+    <p>A clan’s WhatsApp group admin threatens to remove anyone who doesn’t show up to Grandma’s 80th. Expect meme wars, voice-note diplomacy, and a heartfelt finale about showing up in real life.</p>
+
+    <h2>6. Subtitles On</h2>
+    <p>An American comic relocates to Mumbai and bombs — until she starts performing with live captions run by a snarky engineer who becomes her partner in crime. A bilingual stand-up romcom with clever tech gags.</p>
+
+    <h2>7. Four Exes and a Baby</h2>
+    <p>After a DNA test goes viral, four ex-partners are summoned to co-godparent a child they all assumed wasn’t theirs. The film finds fresh laughs in responsibility panic and found-family warmth.</p>
+
+    <h2>8. Delivery Ninja</h2>
+    <p>A bicycle courier turns local legend after a mistaken identity convinces a neighborhood he’s an undercover cop. Street-level capers, perfectly timed near-misses, and a sweet crush on a bookstore owner.</p>
+
+    <h2>9. Culture Shock Therapy</h2>
+    <p>A corporate “globalization bootcamp” strands employees from five countries in a rural retreat with no Wi-Fi. Ice-breaker games escalate into hilarious diplomacy exercises — and surprisingly useful friendships.</p>
+
+    <h2>10. The Plus-One Clause</h2>
+    <p>Two perpetually single friends sign a contract to be each other’s plus-one for a full year of events. The calendar structure lets the jokes evolve from awkward to intimate without losing breezy charm.</p>
+
+    <h2>11. Spare Change</h2>
+    <p>A magician who can’t land gigs launches a petty-cash heist against his own wedding venue after a deposit disaster. Sleight-of-hand gags and planning-gone-wrong set pieces keep the pace zippy.</p>
+
+    <h2>12. Aunties Assemble</h2>
+    <p>A circle of neighborhood aunties forms a covert committee to fix everyone’s love lives — until their own secrets spill. It’s community comedy with irresistible matchmaking chaos.</p>
+
+    <h2>Closing Thoughts</h2>
+    <p>Great 2025 comedies keep setups honest and let reactions carry the laugh. Whether you’re into workplace chaos, road-trip bonding, or family meddling, this slate proves humor travels — especially when it comes from character, not clichés.</p>
+
+    <p class="footer">© <span id="year"></span> CineForge</p>
+  </article>
+</main>
+
+<script>
+(function(){const k='cf-theme',s=localStorage.getItem(k),
+p=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+document.documentElement.setAttribute('data-theme',s||p);
+document.getElementById('theme-toggle').onclick=()=>{const n=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';document.documentElement.setAttribute('data-theme',n);localStorage.setItem(k,n);};
+document.getElementById('year').textContent=new Date().getFullYear();})();
+</script>
+</body></html>

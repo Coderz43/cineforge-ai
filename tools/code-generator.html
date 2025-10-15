@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Code Generator — CineForge</title>
+  <meta name="description" content="Generate clean, production-ready code in seconds. Pick a language and type, describe what you need, and get well-documented code with best practices." />
+  <link rel="icon" href="/assets/icons/favicon.ico" />
+  <link rel="stylesheet" href="/assets/css/style.css" />
+  <!-- Optional: put a key here OR in localStorage('cf-gemini-key') -->
+  <meta name="gemini-key" content="">
+
+  <style>
+:root {
+  --bg:#0b0b0e; --fg:#fff; --muted:#b7b9c2;
+  --card:#141414; --line:rgba(255,255,255,.08);
+  --brand:#7b3ff2;
+}
+:root[data-theme="light"] {
+  --bg:#f7f8fb; --fg:#111; --muted:#4a4d57;
+  --card:#fff; --line:#e2e6ef;
+}
+
+/* ===== Global resets ===== */
+*{box-sizing:border-box}
+html, body { height:100%; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font:16px/1.55 system-ui,Segoe UI,Roboto,Arial;
+}
+
+/* ===== Header (from index.html, fixed spacing) ===== */
+.topbar {
+  position:sticky; top:0; z-index:100;
+  background:#0b0b0e;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex; align-items:center; gap:14px;
+  padding:12px 16px; margin:0;
+}
+.brand {
+  color:#fff; text-decoration:none;
+  font-weight:900; font-size:20px;
+  flex:0 0 auto;
+}
+.brand-accent { color:var(--brand); }
+.topbar .nav {
+  flex:1 0 auto; display:flex; justify-content:center; align-items:center;
+  gap:8px; margin:0; padding:0;
+}
+.topbar .action-group {
+  flex:0 0 auto; margin-left:8px;
+  display:flex; gap:6px; align-items:center;
+  background:#101014; padding:4px;
+  border-radius:12px; border:1px solid rgba(255,255,255,.06);
+}
+
+/* ===== Chips ===== */
+.icon-chip {
+  display:grid; place-items:center;
+  height:40px; padding:0 14px;
+  border-radius:10px; border:1px solid transparent;
+  color:#fff; cursor:pointer;
+  background:transparent; text-decoration:none; line-height:1;
+  transition:background .18s,color .18s,border-color .18s,box-shadow .20s,transform .08s;
+}
+.nav .icon-chip { height:40px; }
+.icon-chip:hover,.icon-chip.is-active {
+  background:var(--brand); border-color:var(--brand);
+  box-shadow:0 8px 18px rgba(123,63,242,.45),0 0 0 2px rgba(123,63,242,.25) inset;
+}
+.icon-chip.is-active {
+  background:#5e2bd6; color:#fff; border-color:#5e2bd6;
+  box-shadow:0 8px 18px rgba(94,43,214,.45),0 0 0 2px rgba(94,43,214,.25) inset;
+}
+.icon-chip:active { transform:scale(.98); }
+.icon-chip svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2; }
+
+/* Theme icon swap */
+.icon-stack{position:relative;width:20px;height:20px}
+.theme-icon{position:absolute;inset:0;transition:transform .25s ease,opacity .25s ease}
+.icon-sun{opacity:0;transform:rotate(90deg) scale(0)}
+.icon-moon{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-sun{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-moon{opacity:0;transform:rotate(-90deg) scale(0)}
+
+
+/* Shared rail */
+.rail{max-width:1120px;margin:0 auto;padding:0 18px}
+
+/* FEATURES */
+.why-grid{display:grid;gap:22px;margin-top:24px;grid-template-columns:1fr}
+@media (min-width:720px){ .why-grid{grid-template-columns:repeat(2,1fr)} }
+@media (min-width:980px){ .why-grid{grid-template-columns:repeat(4,1fr)} }
+.why-grid .card{padding:18px;align-items:center;text-align:center}
+.why-grid .tool-icon{margin:8px auto 10px;display:grid;place-items:center}
+.why-grid .meta{width:100%;text-align:center}
+
+/* GENERATOR */
+.gen-grid{display:grid;gap:22px;margin-top:26px;grid-template-columns:1fr}
+@media (min-width:980px){ .gen-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.gen-card{padding:18px;align-items:stretch}
+.gen-card h3.title{font-size:1.12rem;margin-bottom:10px}
+
+/* Fields */
+.field{display:block;width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:#0f1117;color:#fff}
+:root[data-theme="light"] .field{background:#fff;color:#111;border-color:rgba(0,0,0,.12)}
+.row.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+textarea.field{min-height:180px;resize:vertical}
+
+/* IMPORTANT: fix native select arrow clipping the placeholder text */
+select.field{padding-right:42px !important; text-overflow:clip;}
+
+/* Chips */
+.chips{display:grid;gap:8px;margin-top:12px}
+.chips .chip{
+  display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.1);background:#101218;color:rgba(255,255,255,.9);cursor:pointer
+}
+.chips .chip:hover{background:#121520;border-color:rgba(123,63,242,.35)}
+:root[data-theme="light"] .chips .chip{background:#f7f7ff;color:#222;border-color:#d8cfff}
+
+/* Buttons */
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;padding:12px 14px;border-radius:12px;border:1px solid transparent;cursor:pointer;text-decoration:none}
+.btn-primary{background:#7b3ff2;color:#fff;box-shadow:0 8px 20px rgba(123,63,242,.28)}
+.btn-primary:hover{filter:brightness(1.05)}
+
+/* Output */
+.placeholder{display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:230px;text-align:center;gap:8px;color:rgba(255,255,255,.78)}
+:root[data-theme="light"] .placeholder{color:#444}
+.placeholder .big{font-size:42px;line-height:1}
+pre.codebox{margin-top:10px;border:1px solid rgba(255,255,255,.1);background:#0f1117;border-radius:12px;padding:12px;overflow:auto}
+:root[data-theme="light"] pre.codebox{background:#fff;border-color:rgba(0,0,0,.12)}
+
+/* Results grid */
+#cg-results.grid{margin-top:16px}
+
+/* Footer (safe palette) */
+footer.footer{--sf-bg:#0a0a0a;--sf-fg:rgba(255,255,255,.90);--sf-dim:rgba(255,255,255,.68);--sf-border:rgba(255,255,255,.08);--sf-accent:#7b3ff2;--sf-accent-2:#9e7cff;background:var(--sf-bg);color:var(--sf-fg);border-top:1px solid var(--sf-border);margin-top:48px}
+footer.footer a{color:var(--sf-fg);text-decoration:none}
+footer.footer a:hover{color:var(--sf-accent-2)}
+.footer__grid{max-width:1120px;margin:0 auto;padding:40px 20px 20px;display:grid;grid-template-columns:1fr;gap:26px;text-align:center}
+@media (min-width:680px){.footer__grid{grid-template-columns:repeat(3,minmax(0,1fr));text-align:left}}
+@media (min-width:980px){.footer__grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.footer__brand .brand{font-weight:800;letter-spacing:.2px;display:inline-block;margin-bottom:6px}
+.footer__brand .brand .brand-accent{color:#7b3ff2}
+.footer__text{color:var(--sf-dim);max-width:720px;margin:4px auto 12px;line-height:1.55}
+.footer__social{display:flex;gap:12px;justify-content:center}
+@media (min-width:680px){.footer__social{justify-content:flex-start}}
+.footer__social a{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--sf-border);border-radius:10px;color:var(--sf-dim);transition:border-color .18s ease,color .18s ease,background .18s ease,transform .06s ease}
+.footer__social a:hover{color:#fff;background:rgba(123,63,242,.16);border-color:rgba(123,63,242,.45);transform:translateY(-1px)}
+.footer__title{font-weight:700;letter-spacing:.3px;margin:4px 0 8px;color:#fff}
+.footer__list{list-style:none;margin:0;padding:0}
+.footer__list li{padding:6px 0}
+.footer__bottom{border-top:1px solid var(--sf-border);padding:14px 20px 26px;text-align:center}
+.footer__fine,.footer__copy{color:var(--sf-dim);margin:4px 0}
+  </style>
+
+  <!-- SEO structured data -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebPage",
+    "name":"Code Generator — CineForge",
+    "description":"Generate clean, production-ready code with explanations. Choose a language and type, describe your requirements, and get code instantly.",
+    "url":"https://your-domain.example/tools/code-generator.html"
+  }
+  </script>
+</head>
+<body>
+
+
+  <!-- ===== Header ===== -->
+  <header class="topbar">
+  <a class="brand" href="/"><span class="brand-accent">Cine</span>Forge</a>
+  <nav class="nav" aria-label="Primary">
+    <a class="icon-chip nav-chip" data-route="/" href="/">Home</a>
+    <a class="icon-chip nav-chip" data-route="/reels.html" href="/reels.html">Reels</a>
+    <a class="icon-chip nav-chip is-active" data-route="/blog.html" href="/blog.html">Blog</a>  <a class="icon-chip nav-chip" data-route="/tools.html" href="/tools.html">Explore Tools</a>
+  </nav>
+  <div class="action-group" aria-label="Header actions">
+      <a href="/bookmarks.html" class="icon-chip" aria-label="Bookmarks" title="Bookmarks">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"/>
+        </svg>
+      </a>
+      <button id="theme-toggle" class="icon-chip" aria-label="Toggle theme" title="Toggle theme">
+        <span class="icon-stack" aria-hidden="true">
+          <svg class="theme-icon icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg class="theme-icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+        </span>
+      </button>
+    </div>
+  </header>
+
+<main class="container" style="padding-top:22px">
+  <!-- HERO -->
+  <section class="hero rail" aria-labelledby="cg-hero">
+    <div class="badge">⌘ <span>AI-Powered</span></div>
+    <h1 id="cg-hero" class="typo">Code <span class="brand-accent">Generator</span></h1>
+    <p class="sub">Generate clean, production-ready code in your favorite language. From quick utilities to full modules — with explanations and best practices.</p>
+  </section>
+
+  <!-- WHY -->
+  <section class="rail" aria-label="Why Use Our Code Generator">
+    <div class="why-grid">
+      <div class="card"><div class="tool-icon">🧩</div><div class="meta"><h3 class="title">Multiple Languages</h3><div class="row"><span>Python, JavaScript/TypeScript, Java, C/C++, Go, Rust and more.</span></div></div></div>
+      <div class="card"><div class="tool-icon">✅</div><div class="meta"><h3 class="title">Best Practices</h3><div class="row"><span>Clean architecture, error handling, docs, tests, and patterns.</span></div></div></div>
+      <div class="card"><div class="tool-icon">⚡</div><div class="meta"><h3 class="title">Instant Generation</h3><div class="row"><span>Get production-ready snippets with usage examples in seconds.</span></div></div></div>
+      <div class="card"><div class="tool-icon">📘</div><div class="meta"><h3 class="title">Learning Focused</h3><div class="row"><span>Commented code and explanations to help you understand & extend.</span></div></div></div>
+    </div>
+  </section>
+
+  <!-- GENERATOR -->
+  <section class="rail" style="margin-top:34px" aria-labelledby="gen-heading">
+    <h2 id="gen-heading" class="typo" style="font-size:1.9rem;margin-bottom:8px">Generate Your Code</h2>
+    <p class="sub" style="margin-bottom:14px">Describe what you want to build and we’ll generate code for you with explanations.</p>
+
+    <div class="gen-grid">
+      <!-- Left -->
+      <div class="card gen-card" role="region" aria-label="Code Request">
+        <h3 class="title">Code Request</h3>
+
+        <form id="cg-form" novalidate>
+          <div class="row controls">
+            <select id="cg-lang" class="field" aria-label="Programming Language">
+              <option value="">Select language (optional)</option>
+              <!-- Full list injected by JS -->
+            </select>
+
+            <select id="cg-type" class="field" aria-label="Code Type">
+              <option value="">Select type (optional)</option>
+              <!-- Full list injected by JS -->
+            </select>
+          </div>
+
+          <label for="cg-desc" class="visually-hidden">Code Description</label>
+          <textarea id="cg-desc" class="field" placeholder="Describe the code you want. Be specific about functionality, requirements, and any constraints..."></textarea>
+
+          <div class="chips" aria-label="Example requests">
+            <div class="chip" data-fill="Create a Python function to merge two sorted arrays efficiently with O(n) time and O(1) extra space.">Create a Python function to merge two sorted arrays efficiently…</div>
+            <div class="chip" data-fill="Build a React component for a responsive image gallery with lazy loading and keyboard navigation.">Build a React component for a responsive image gallery…</div>
+            <div class="chip" data-fill="Generate a SQL query to find duplicate records and remove them safely using a CTE.">Generate a SQL query to find duplicate records and remove them</div>
+            <div class="chip" data-fill="Write a JavaScript function to debounce API calls with leading/trailing options and unit tests.">Write a JavaScript function to debounce API calls</div>
+            <div class="chip" data-fill="Create a Python class for managing a Redis cache connection with TTL, get/set, and JSON serialization.">Create a Python class for managing a Redis cache connection</div>
+          </div>
+
+          <div style="margin-top:14px">
+            <button type="submit" class="btn btn-primary">⚙️ Generate Code</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Right -->
+      <div class="card gen-card" role="region" aria-label="Generated Code">
+        <h3 class="title">Generated Code</h3>
+        <div id="cg-output" class="placeholder">
+          <div class="big">⌘</div>
+          <p>Enter your request on the left and click <strong>Generate Code</strong> to see the result with explanations.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent -->
+  <section id="results" class="rail" style="margin-top:34px">
+    <h2 class="typo" style="font-size:1.6rem;margin-bottom:10px">Recent Generations</h2>
+    <div id="cg-results" class="grid tools-grid"></div>
+  </section>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer" id="site-footer" aria-labelledby="footer-heading">
+  <h2 id="footer-heading" class="visually-hidden">Site Footer</h2>
+  <div class="footer__grid">
+    <div class="footer__brand">
+      <a class="brand" href="/" aria-label="CineForge home"><span class="brand-accent">Cine</span>Forge</a>
+      <p class="footer__text">AI-powered picks with trailers, region-aware watch options, and easy bookmarks — built on TMDB data and Gemini reasoning.</p>
+      <div class="footer__social" aria-label="Social links">
+        <a href="https://x.com" target="_blank" rel="noopener" aria-label="X">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18 2h3l-7.5 8.6L22 22h-6.8l-4.3-5.7L5.8 22H3l8.1-9.3L2 2h6.9l3.9 5.2L18 2zm-2.4 18h1.6L8.6 4H7L15.6 20z"/></svg>
+        </a>
+        <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.5-1.3-1.2-1.6-1.2-1.6-1-.7.1-.7.1-.7 1.1.1 1.6 1.2 1.6 1.2 1 1.7 2.6 1.2 3.2.9.1-.7.4-1.2.7-1.5-2.6-.3-5.3-1.3-5.3-6 0-1.3.5-2.3 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.3 11.3 0 0 1 6 0C17 4.7 18 5 18 5c.6 1.7.2 2.9.1 3.2.8.9 1.2 1.9 1.2 3.2 0 4.7-2.7 5.6-5.3 6 .4.3.7.9.7 1.8v2.6c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <nav class="footer__col" aria-label="Product">
+      <h3 class="footer__title">Product</h3>
+      <ul class="footer__list">
+        <li><a href="/">Home</a></li>
+        <li><a href="/reels.html">Reels</a></li>
+        <li><a href="/blog.html">Blog</a></li>
+        <li><a href="/bookmarks.html">Bookmarks</a></li>
+      </ul>
+    </nav>
+
+    <nav class="footer__col" aria-label="Features">
+      <h3 class="footer__title">Features</h3>
+      <ul class="footer__list">
+        <li><a href="/#welcome">Describe → AI Picks</a></li>
+        <li><a href="/#results">Title Search &amp; Typeahead</a></li>
+        <li><a href="/#filters">Genre Filters</a></li>
+        <li><a href="/#region-price-tools">Region &amp; Providers</a></li>
+      </ul>
+    </nav>
+
+    <nav class="footer__col" aria-label="Resources">
+      <h3 class="footer__title">Resources</h3>
+      <ul class="footer__list">
+        <li><a href="/privacy.html">Privacy</a></li>
+        <li><a href="/terms.html">Terms</a></li>
+        <li><a href="/sitemap.xml">Sitemap</a></li>
+        <li><a href="mailto:hello@cineforge.app">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="footer__bottom">
+    <p class="footer__fine">Powered by Gemini and The Movie Database (TMDB). Not affiliated with any streaming service.</p>
+    <p class="footer__copy">© <span id="year"></span> CineForge</p>
+  </div>
+</footer>
+
+<script>
+  // Active nav chip
+  (function(){
+    const here = (location.pathname.replace(/\/+$/, '') || '/');
+    document.querySelectorAll('.nav-chip').forEach(a=>{
+      const route = a.getAttribute('data-route');
+      if ((route === '/' && here === '/') || (route !== '/' && here.endsWith(route))) a.classList.add('is-active');
+    });
+  })();
+
+  // Theme init + switch (resilient: supports #theme-switch checkbox or #theme-toggle button)
+  (function(){
+    const el = document.documentElement;
+    const btn = document.getElementById('theme-toggle');
+    const sw  = document.getElementById('theme-switch'); // may not exist
+    const preferred = localStorage.getItem('cf-theme')
+      || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+
+    function setTheme(t){
+      el.setAttribute('data-theme', t);
+      localStorage.setItem('cf-theme', t);
+      if (sw) sw.checked = (t === 'light');
+    }
+    setTheme(preferred);
+
+    if (btn) btn.addEventListener('click', ()=>{
+      setTheme(el.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    });
+    if (sw) sw.addEventListener('change', ()=> setTheme(sw.checked ? 'light' : 'dark'));
+  })();
+
+  // Footer year
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Example chips -> fill textarea (in case page JS hasn’t attached yet)
+  document.querySelectorAll('.chip[data-fill]').forEach(ch=>{
+    ch.addEventListener('click', ()=>{
+      const ta = document.getElementById('cg-desc');
+      ta.value = ch.getAttribute('data-fill');
+      ta.focus();
+    });
+  });
+</script>
+
+<!-- Page script (generation, copy button, recent list) -->
+<script type="module" src="/assets/js/tools/code-generator.js"></script>
+<!-- Optional global bundle -->
+<script type="module" src="/assets/js/app.js"></script>
+
+</body>
+</html>

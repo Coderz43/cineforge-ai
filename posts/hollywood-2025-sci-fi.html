@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Hollywood 2025: Sci-Fi Takes the Lead — CineForge</title>
+<meta name="description" content="Why science fiction dominates 2025: themes, craft choices, and the titles pushing the genre forward."/>
+<link rel="icon" href="/assets/icons/favicon.ico"/>
+<style>
+/* ===== Theme variables ===== */
+:root {
+  --bg:#0b0b0e; --fg:#fff; --muted:#b7b9c2;
+  --card:#141414; --line:rgba(255,255,255,.08);
+  --brand:#7b3ff2;
+}
+:root[data-theme="light"] {
+  --bg:#f7f8fb; --fg:#111; --muted:#4a4d57;
+  --card:#fff; --line:#e2e6ef;
+}
+
+/* ===== Global resets ===== */
+*{box-sizing:border-box}
+html, body { height:100%; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font:16px/1.55 system-ui,Segoe UI,Roboto,Arial;
+}
+
+/* ===== Header (from index.html, fixed spacing) ===== */
+.topbar {
+  position:sticky; top:0; z-index:100;
+  background:#0b0b0e;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex; align-items:center; gap:14px;
+  padding:12px 16px; margin:0;
+}
+.brand {
+  color:#fff; text-decoration:none;
+  font-weight:900; font-size:20px;
+  flex:0 0 auto;
+}
+.brand-accent { color:var(--brand); }
+.topbar .nav {
+  flex:1 0 auto; display:flex; justify-content:center; align-items:center;
+  gap:8px; margin:0; padding:0;
+}
+.topbar .action-group {
+  flex:0 0 auto; margin-left:8px;
+  display:flex; gap:6px; align-items:center;
+  background:#101014; padding:4px;
+  border-radius:12px; border:1px solid rgba(255,255,255,.06);
+}
+
+/* ===== Chips ===== */
+.icon-chip {
+  display:grid; place-items:center;
+  height:40px; padding:0 14px;
+  border-radius:10px; border:1px solid transparent;
+  color:#fff; cursor:pointer;
+  background:transparent; text-decoration:none; line-height:1;
+  transition:background .18s,color .18s,border-color .18s,box-shadow .20s,transform .08s;
+}
+.nav .icon-chip { height:40px; }
+.icon-chip:hover,.icon-chip.is-active {
+  background:var(--brand); border-color:var(--brand);
+  box-shadow:0 8px 18px rgba(123,63,242,.45),0 0 0 2px rgba(123,63,242,.25) inset;
+}
+.icon-chip.is-active {
+  background:#5e2bd6; color:#fff; border-color:#5e2bd6;
+  box-shadow:0 8px 18px rgba(94,43,214,.45),0 0 0 2px rgba(94,43,214,.25) inset;
+}
+.icon-chip:active { transform:scale(.98); }
+.icon-chip svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2; }
+
+/* Theme icon swap */
+.icon-stack{position:relative;width:20px;height:20px}
+.theme-icon{position:absolute;inset:0;transition:transform .25s ease,opacity .25s ease}
+.icon-sun{opacity:0;transform:rotate(90deg) scale(0)}
+.icon-moon{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-sun{opacity:1;transform:rotate(0) scale(1)}
+:root[data-theme="light"] .icon-moon{opacity:0;transform:rotate(-90deg) scale(0)}
+
+/* ===== Content ===== */
+.wrap { max-width:980px; margin:0 auto; padding:28px 16px 60px; }
+.hero {
+  position:relative; height:360px; border-radius:16px; overflow:hidden;
+  border:1px solid var(--line); margin:18px 0;
+}
+.hero img { width:100%; height:100%; object-fit:cover; display:block; }
+.hero::after {
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(0deg,rgba(0,0,0,.55),transparent 40%);
+}
+.h-meta{position:absolute;left:18px;bottom:16px;color:#fff}
+.kicker{font-size:12px;letter-spacing:.4px;font-weight:800}
+.h-title{margin:6px 0 0;font-size:32px}
+.article{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+h2{margin:22px 0 8px;font-size:22px}
+h3{margin:16px 0 6px;font-size:18px;color:#141414}
+.footer{margin-top:24px;text-align:center;opacity:.8}
+</style>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Hollywood 2025: Sci-Fi Takes the Lead","datePublished":"2025-02-10","author":{"@type":"Organization","name":"CineForge"},"image":["/assets/blog/hollywood-2025.jpg"]}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/"><span class="brand-accent">Cine</span>Forge</a>
+  <nav class="nav" aria-label="Primary">
+    <a class="icon-chip nav-chip" data-route="/" href="/">Home</a>
+    <a class="icon-chip nav-chip" data-route="/reels.html" href="/reels.html">Reels</a>
+    <a class="icon-chip nav-chip is-active" data-route="/blog.html" href="/blog.html">Blog</a>
+  </nav>
+  <div class="action-group" aria-label="Header actions">
+      <a href="/bookmarks.html" class="icon-chip" aria-label="Bookmarks" title="Bookmarks">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"/>
+        </svg>
+      </a>
+      <button id="theme-toggle" class="icon-chip" aria-label="Toggle theme" title="Toggle theme">
+        <span class="icon-stack" aria-hidden="true">
+          <svg class="theme-icon icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg class="theme-icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+        </span>
+      </button>
+    </div>
+  </header>
+
+<main class="wrap">
+  <section class="hero"><img src="/assets/samples/hollywood2025.jpg" alt="Futuristic sci-fi cityscape"/>
+    <div class="h-meta"><div class="kicker">MOVIE REVIEWS • FEB 2025</div><h1 class="h-title">Hollywood 2025: Sci-Fi Takes the Lead</h1></div>
+  </section>
+
+  <article class="article">
+    <p class="lede">From grounded astronaut dramas to neon-noir cyber epics, <strong>science fiction leads 2025</strong>. The genre is connecting because it mirrors the moment: AI ethics, resource stress, climate dread, and the search for hope. Below is a simple, image-free roundup — written like a clean magazine list — of the most talked-about and most watchable sci-fi films of 2025 so far.</p>
+
+    <h2>Introduction</h2>
+    <p>Studios are betting big on sci-fi again — not just with sequels, but with fresh ideas, thoughtful world-building, and tactile craft. Expect fewer CGI-only spectacles and more films that combine <em>in-camera tricks</em>, practical builds, and precise VFX. Sound design has swung back to texture and silence. Scripts are clearer about world rules, so stakes feel real.</p>
+
+    <!-- Numbered list in competitor style (title + short paragraph) -->
+    <h2>1. Avatar: Fire and Ash</h2>
+    <p>James Cameron’s third Pandora chapter pushes the saga into a fiery war story, introducing the Ash People and escalating the family’s fight for survival. Expect apocalyptic vistas, large-format action, and meticulous ecological themes. Scheduled for December 2025. <em>(Series info & 2025 date widely reported in recent trailer coverage.)</em></p>
+
+    <h2>2. TRON: Ares</h2>
+    <p>The Grid returns with a sleek, modern spin on AI-born entities crossing into the real world. <em>Ares</em> is pitched as a character-driven chapter with cutting-edge light-suit design and volumetric stages, making it one of the year’s cleanest “neon future” showcases.</p>
+
+    <h2>3. Predator: Badlands</h2>
+    <p>The long-running hunter saga heads to harsh new terrain, doubling down on stealth, survival logic, and practical creature work. Fans are excited for the stripped-back tone — closer to thriller than fireworks.</p>
+
+    <h2>4. Mickey 17</h2>
+    <p>Bong Joon-ho adapts Edward Ashton’s novel into a philosophical clone odyssey — equal parts satire and survival. Expect identity puzzles, dry humor, and world-class image craft anchored by a star turn.</p>
+
+    <h2>5. The Electric State</h2>
+    <p>The Russo brothers’ retro-future road story blends analog robots with Americana. It’s intimate sci-fi: a young traveler, a mysterious companion bot, and a world crumbling at the edges. A comfortingly melancholy tone sets it apart from louder tentpoles.</p>
+
+    <h2>6. Frankenstein</h2>
+    <p>Guillermo del Toro’s Gothic take reframes Shelley’s classic as a soulful science fable. Lavish production design, practical makeup, and a tragic, performance-forward creature make this one of the year’s prestige genre releases.</p>
+
+    <h2>7. Jurassic World: Rebirth</h2>
+    <p>New faces, new bioengineering stakes. <em>Rebirth</em> promises more survival tension and less theme-park chaos, with an emphasis on fieldcraft, creature behavior, and ethical lines crossed in the lab.</p>
+
+    <h2>8. Elio</h2>
+    <p>Pixar’s imaginative first-contact adventure puts empathy at the heart of sci-fi again. A kid accidentally becomes Earth’s ambassador to a cosmic council — cue playful world-building, luminous design, and a message about belonging.</p>
+
+    <h2>9. Bugonia</h2>
+    <p>A sharp, high-concept import mixing eco-horror with deadpan humor. Quirky tone aside, it delivers sticky ideas about invasive species, human hubris, and the danger of quick techno-fixes.</p>
+
+    <h2>10. The Astronaut</h2>
+    <p>Grounded survival on the edge of space — sparse dialogue, big feelings, and set-pieces that prioritize believable engineering problems over magical tech. The kind of film that makes every air hiss feel like a jump scare.</p>
+
+    <h2>11. Mercy</h2>
+    <p>A near-future thriller where medical augmentation collides with corporate power. Slick, nocturnal photography and a synth-heavy score give it neon-noir flavor without losing its human pulse.</p>
+
+    <h2>12. The Running Man</h2>
+    <p>A contemporary spin on the dystopian game-show premise: sharper media satire, grittier urban chase geography, and stunt-driven action that feels uncomfortably plausible.</p>
+
+    <h2>Why sci-fi is working in 2025</h2>
+    <ul>
+      <li><strong>Human-scale stakes:</strong> Even in huge worlds, the stories track one relationship or one moral choice.</li>
+      <li><strong>Tactile filmmaking:</strong> Real sets + miniatures + selective CG make light interact with something physical.</li>
+      <li><strong>Clear rules:</strong> The best scripts define limits early, so payoffs feel earned.</li>
+      <li><strong>Hope-punk edge:</strong> Bleak settings, but choices matter; characters push for better futures.</li>
+    </ul>
+
+    <blockquote class="quote">“2025 sci-fi looks expensive not because of pixels, but because <strong>light hits something real</strong>.”</blockquote>
+
+    <h2>Final thoughts</h2>
+    <p>If you see only a few this year, start with the big cultural moments — <em>Avatar: Fire and Ash</em> and <em>TRON: Ares</em> — then balance them with author-driven pieces like <em>Mickey 17</em>, <em>The Electric State</em>, and del Toro’s <em>Frankenstein</em>. Together, they show why sci-fi owns 2025: it’s the genre most willing to ask hard questions and still send you home inspired.</p>
+
+    <div class="footer">© <span id="year"></span> CineForge</div>
+  </article>
+</main>
+
+<script>
+(function(){const k='cf-theme',s=localStorage.getItem(k),
+p=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+document.documentElement.setAttribute('data-theme',s||p);
+document.getElementById('theme-toggle').onclick=()=>{const n=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';document.documentElement.setAttribute('data-theme',n);localStorage.setItem(k,n);};
+document.getElementById('year').textContent=new Date().getFullYear();})();
+</script>
+</body></html>
