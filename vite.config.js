@@ -1,21 +1,20 @@
-import { defineConfig } from 'vite';
+import { resolve } from 'path';
 
-export default defineConfig({
-  base: '/',
+export default {
+  base: './',
   build: {
+    outDir: 'dist',
+    emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: 'index.html',
-        reels: 'reels.html',
-        blog: 'blog.html',
-        tools: 'tools.html',
-        game: 'tools/game-finder.html',
-        movie: 'tools/movie-finder.html',
-        code: 'tools/code-generator.html',
-        pc: 'tools/pc-build-calculator.html',
-        psu: 'tools/psu-calculator.html',
-        fps: 'tools/fps-calculator.html'
+        main: resolve(__dirname, 'index.html'),
+        people: resolve(__dirname, 'people.html'),
+        blog: resolve(__dirname, 'blog.html'),
+        tools: resolve(__dirname, 'tools.html'),
+        reels: resolve(__dirname, 'reels.html'),
+        pcbuild: resolve(__dirname, 'tools/pc-build-calculator.html'),
+        psu: resolve(__dirname, 'tools/psu-calculator.html')
       }
     }
   }
-});
+};
