@@ -2,14 +2,19 @@
 import { $, $$, guessRegion } from './utils.js';
 import { initTheme, getMode, setMode } from './store.js';
 import { renderCard, renderGenres, openTrailer, closeTrailer, openDetails } from './ui.js';
-import { aiSuggest, searchTMDB, getGenres, getVideos, getWatchProviders, getPerson } from './api.js';
-import * as api from './api.js'; // window.CF.api
+import * as api from './api.js';
+import { promptSearch } from './services/prompt-search.js';
 
+const { aiSuggest, searchTMDB, getGenres, getVideos, getWatchProviders, getPerson } = api;
+
+/* =========================
+   Theme + Footer Year
+   ========================= */
 initTheme();
 document.getElementById('year').textContent = new Date().getFullYear();
 
 /* =========================
-   Typewriter
+   Typewriter (cosmetic)
    ========================= */
 (function typewriter () {
   const el = document.getElementById('hero-title');
@@ -30,35 +35,12 @@ document.getElementById('year').textContent = new Date().getFullYear();
 })();
 
 /* =========================
-   Mode toggle (Describe / Title)
-   ========================= */
-const modeDescribe = $('#mode-describe');
-const modeTitle = $('#mode-title');
-let mode = getMode();
-const input = $('#search-input');
-
-if (mode === 'title') {
-  modeTitle?.classList.add('chip--active');
-  modeDescribe?.classList.remove('chip--active');
-  if (input) input.placeholder = 'Type a movie or show…';
-}
-modeDescribe?.addEventListener('click', () => {
-  mode = 'describe'; setMode(mode);
-  modeDescribe.classList.add('chip--active'); modeTitle.classList.remove('chip--active');
-  if (input) input.placeholder = 'Describe a mood… e.g., witty heist with friends';
-  hideTypeahead();
-});
-modeTitle?.addEventListener('click', () => {
-  mode = 'title'; setMode(mode);
-  modeTitle.classList.add('chip--active'); modeDescribe.classList.remove('chip--active');
-  if (input) input.placeholder = 'Type a movie or show…';
-  taDebounced();
-});
-
-/* =========================
-   Elements & state
+   Elements & basic state
    ========================= */
 const form = $('#search-form');
+const input = $('#search-input');
+const modeDescribe = $('#mode-describe');
+const modeTitle = $('#mode-title');
 const suggestBtn = $('#suggest-btn');
 
 const results = $('#results');
@@ -71,23 +53,65 @@ const loadMoreBtn = $('#load-more');
 const toolbar = document.querySelector('.toolbar');
 const regionPriceTools = document.querySelector('.region-price-tools');
 
-// region/price
 const regionSel = document.getElementById('region-select');
 const priceSel  = document.getElementById('price-select');
 
-// typeahead
 const ta = $('#typeahead');
 const taList = $('#ta-list');
 
-// remember the exact suggestion user clicked
-let selectedFromTA = null;
-
-// IMAGE: upload elements + state
 const imageTrigger = document.getElementById('image-trigger');
 const imageInputEl = document.getElementById('image-input');
-imageInputEl?.setAttribute('accept', 'image/png'); // PNG only (UI)
+imageInputEl?.setAttribute('accept', 'image/png');
+const ATTACH_MAX = 5;
 
-/* ---- small inline notice ---- */
+const STORE_KEY = 'cf:lastSearch:v2';
+
+/* Clear last state on full reload (keep only on back/forward) */
+(function clearOnReload(){
+  try {
+    const nav = performance.getEntriesByType?.('navigation')?.[0];
+    const t = nav?.type || (performance.navigation?.type === 1 ? 'reload' : 'navigate');
+    if (t !== 'back_forward') sessionStorage.removeItem(STORE_KEY);
+  } catch {}
+})();
+
+/* =========================
+   Default mode: Movie / TV
+   ========================= */
+let mode = getMode() || 'title';
+setMode(mode);
+
+function hasImages(){ return (_filesFromBin().length>0 || _filesFromInput().length>0); }
+function setPlaceholders () {
+  if (!input) return;
+  if (hasImages()) { input.placeholder = 'Ask me anything…'; return; }
+  input.placeholder = (mode === 'title')
+    ? 'Type a movie or show…'
+    : 'Type a name to explore';
+}
+
+// init chips
+if (mode === 'title') { modeTitle?.classList.add('chip--active'); modeDescribe?.classList.remove('chip--active'); }
+else { mode = 'describe'; setMode(mode); modeDescribe?.classList.add('chip--active'); modeTitle?.classList.remove('chip--active'); }
+setPlaceholders();
+
+modeDescribe?.addEventListener('click', () => {
+  mode = 'describe'; setMode(mode);
+  modeDescribe.classList.add('chip--active'); modeTitle?.classList.remove('chip--active');
+  hideTypeahead(); setPlaceholders();
+  // Clear result grid when switching to Describe (no default cards)
+  results.innerHTML = '';
+  showEmpty(true);
+});
+modeTitle?.addEventListener('click', () => {
+  mode = 'title'; setMode(mode);
+  modeTitle.classList.add('chip--active'); modeDescribe?.classList.remove('chip--active');
+  setPlaceholders(); taDebounced();
+});
+
+/* =========================
+   Notices + attach plumbing
+   ========================= */
 function showNotice(msg, ms = 2500) {
   let n = document.getElementById('cf-notice');
   if (!n) {
@@ -100,19 +124,13 @@ function showNotice(msg, ms = 2500) {
   if (ms > 0) setTimeout(() => { if (n) n.textContent = ''; }, ms);
 }
 
-/* ---- FILE SOURCE BRIDGE ---- */
-const ATTACH_MAX = 5;
 function stashFilesFromInputCapture() {
   const raw = imageInputEl?.files ? Array.from(imageInputEl.files).slice(0, ATTACH_MAX) : [];
   if (!raw.length) return;
 
   const pngs = raw.filter(f => (f.type || '').toLowerCase() === 'image/png' || /\.png$/i.test(f.name || ''));
   if (pngs.length !== raw.length) showNotice('Only PNG files are supported.');
-
-  if (!pngs.length) {
-    try { imageInputEl.value = ''; } catch {}
-    return;
-  }
+  if (!pngs.length) { try { imageInputEl.value = ''; } catch {} return; }
 
   window.CF_ATTACH = (window.CF_ATTACH || []).concat(pngs).slice(0, ATTACH_MAX);
   window.dispatchEvent(new Event('cf-attachments-changed'));
@@ -122,17 +140,10 @@ imageInputEl?.addEventListener('change', stashFilesFromInputCapture, { capture: 
 function _filesFromBin(){ return Array.isArray(window.CF_ATTACH) ? window.CF_ATTACH.slice(0, ATTACH_MAX) : []; }
 function _filesFromInput(){ return imageInputEl?.files ? Array.from(imageInputEl.files).slice(0, ATTACH_MAX) : []; }
 function getAttachedImages(){ const bin=_filesFromBin(); return bin.length ? bin : _filesFromInput(); }
-function hasImages(){ return _filesFromBin().length>0 || _filesFromInput().length>0; }
-
-function updatePlaceholderByImages(){
-  if (!input) return;
-  input.placeholder = hasImages()
-    ? 'Ask me anything…'
-    : (mode === 'title' ? 'Type a movie or show…' : 'Describe a mood… e.g., witty heist with friends');
-}
+function updatePlaceholderByImages(){ setPlaceholders(); }
 window.addEventListener('cf-attachments-changed', updatePlaceholderByImages);
 
-/* hidden controls init */
+// hidden UI init
 if (toolbar) toolbar.hidden = true;
 if (regionPriceTools) regionPriceTools.hidden = true;
 if (filtersBox) filtersBox.hidden = true;
@@ -141,7 +152,7 @@ if (empty) empty.hidden = true;
 let activeGenres = new Set();
 let genreMap = { movie: [], tv: [] };
 let rawItems = [];
-let current = { query: '', type: 'multi', page: 1 };
+let current = { query: '', type: 'multi', page: 1, source: 'tmdb' }; // 'tmdb' | 'prompt'
 let lastPeople = [];
 
 /* =========================
@@ -183,10 +194,12 @@ function populateRegions() {
    Helpers
    ========================= */
 function showEmpty (state) { if (empty) empty.hidden = !state; }
+
 async function ensureGenres () {
   if (genreMap.movie.length || genreMap.tv.length) return;
   genreMap = await getGenres();
 }
+
 function applyFilters (items) {
   let list = items;
   const t = typeSel?.value || 'all';
@@ -194,16 +207,50 @@ function applyFilters (items) {
   const q = (searchInResults?.value || '').trim().toLowerCase();
   if (q) list = list.filter(x => (x.title || x.name || '').toLowerCase().includes(q));
   switch (sortSel?.value) {
-    case 'rating': list = list.slice().sort((a,b)=>(b.vote_average||0)-(a.vote_average||0)); break;
-    case 'yearDesc': list = list.slice().sort((a,b)=>(b.release_date||b.first_air_date||'').localeCompare(a.release_date||a.first_air_date||'')); break;
-    case 'yearAsc': list = list.slice().sort((a,b)=>(a.release_date||a.first_air_date||'').localeCompare(b.release_date||b.first_air_date||'')); break;
+    case 'rating':
+      list = list.slice().sort((a,b)=>(b.vote_average||0)-(a.vote_average||0) || (b.popularity||0)-(a.popularity||0));
+      break;
+    case 'yearDesc':
+      list = list.slice().sort((a,b)=>(b.release_date||b.first_air_date||'').localeCompare(a.release_date||a.first_air_date||'')); break;
+    case 'yearAsc':
+      list = list.slice().sort((a,b)=>(a.release_date||a.first_air_date||'').localeCompare(b.release_date||b.first_air_date||'')); break;
+    default:
+      list = list.slice().sort((a,b)=>(b.vote_average||0)-(a.vote_average||0) || (b.popularity||0)-(a.popularity||0));
   }
   if (activeGenres.size) list = list.filter(it => (it.genre_ids||[]).some(id => activeGenres.has(id)));
   return list;
 }
 
+/* ====== Professional “no results” message ====== */
+function hasHindiHint(s) {
+  const str = String(s || '');
+  return /hindi|bollywood|south\s*indian|punjabi|tamil|telugu|malayalam|kannada|marathi|bengali|gujarati|देसी|हिंदी|[\u0900-\u097F]/i.test(str);
+}
+function renderNoResultsMessage(q='') {
+  const isHindiish = hasHindiHint(q);
+  const tips = isHindiish
+    ? [
+        'Type clearer Hindi keywords (e.g. "Hindi thriller", "South Indian action").',
+        'Try the exact movie/show title (Roman or देवनागरी).',
+        'Switch to Movie/TV mode for exact titles.',
+      ]
+    : [
+        'Check the spelling or try the exact title.',
+        'Add a language hint (e.g. "Hindi", "Punjabi", "English").',
+        'Try broader words like "thriller", "family drama", "rom-com".',
+      ];
+  return `
+    <div class="empty">
+      <div style="font-weight:600;margin-bottom:.25rem;">No results found for “${(q||'').replace(/</g,'&lt;')}”.</div>
+      <div style="opacity:.9">Try these:</div>
+      <ul style="margin:.5rem 0 0 1rem;line-height:1.4">
+        ${tips.map(t=>`<li>${t}</li>`).join('')}
+      </ul>
+    </div>`;
+}
+
 /* =========================
-   Typeahead (Movie/TV)
+   Typeahead (Title mode)
    ========================= */
 function yearOf(item){ const d=item.release_date||item.first_air_date||''; return d?d.slice(0,4):''; }
 function mediaBadge(item){ return item.media_type==='tv'?'TV':'Movie'; }
@@ -246,7 +293,13 @@ input?.addEventListener('focus', () => { if (mode==='title') taDebounced(); });
 document.addEventListener('click', (e)=>{ const within=form?.contains?.(e.target) || ta?.contains(e.target); if(!within) hideTypeahead(); });
 document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') hideTypeahead(); });
 
+/* Enter key submits (no Shift) */
+input?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); triggerSuggest(); }
+});
+
 // SELECT suggestion -> remember item and trigger Suggest
+let selectedFromTA = null;
 taList?.addEventListener('click', (e) => {
   const el = e.target.closest('.ta-item'); if(!el) return;
   const id = Number(el.dataset.id);
@@ -256,26 +309,6 @@ taList?.addEventListener('click', (e) => {
   if (input) input.value = title;
   hideTypeahead();
   triggerSuggest();
-});
-
-/* =========================
-   IMAGE: in-bar upload behavior
-   ========================= */
-imageTrigger?.addEventListener('click', () => imageInputEl?.click());
-imageInputEl?.addEventListener('change', () => {
-  updatePlaceholderByImages();
-  hideTypeahead();
-});
-updatePlaceholderByImages();
-
-/* =========================
-   Keyboard: Enter triggers Suggest
-   ========================= */
-input?.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    triggerSuggest();
-  }
 });
 
 /* =========================
@@ -312,7 +345,8 @@ function applyAndDraw(items) {
   const list = applyFilters(items);
   results.innerHTML = '';
   if (!list.length) {
-    results.innerHTML = '<div class="empty">No matches. Try a broader query.</div>';
+    const q = (input?.value || current.query || '').trim();
+    results.innerHTML = renderNoResultsMessage(q);
     if (loadMoreBtn) loadMoreBtn.style.display = 'none';
     saveLastSearchState();
     return;
@@ -342,72 +376,35 @@ function applyAndDraw(items) {
     });
     results.appendChild(card);
   });
-  if (loadMoreBtn) loadMoreBtn.style.display = 'block';
+  if (loadMoreBtn) {
+    loadMoreBtn.style.display = (current.source === 'tmdb') ? 'block' : 'none';
+  }
   saveLastSearchState();
 }
 
 /* =========================
-   Image → title helpers
+   Prompt / title helpers
    ========================= */
-function normalizeTitle(s=''){ return s.toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); }
-function parseGuess(g){
-  const m = String(g||'').match(/^(.+?)\s*\((\d{4})\)\s*$/);
-  return m ? { title: m[1], year: Number(m[2]) } : { title: String(g||''), year: null };
-}
-function isGoodGuess(g) {
-  if (!g) return false;
-  const s = String(g).trim();
-  if (s.length < 3) return false;
-  const letters = (s.match(/[A-Za-z]/g) || []).length;
-  const digits  = (s.match(/\d/g) || []).length;
-  if (letters < 3 && digits > 0) return false;
-  if (s.length >= 4 && !/[AEIOUaeiou]/.test(s)) return false;
-  return true;
-}
-function itemYear(it){ const d=it.release_date||it.first_air_date||''; return d?Number(d.slice(0,4)):null; }
+const PROMPT_RE = new RegExp([
+  'like','similar','recommend','suggest','vibe','vibes?','mood',
+  'thriller','action','romance','horror','comedy','drama','mystery','noir','heist','investigation','detective',
+  'slow\\s*burn','psychological','crime','family','emotional','real(istic)?','true\\s*story',
+  'jaisa','jaise','jaisi','type','ke\\s*jaise','ki\\s*tarah','हिंदी','जैसा','जैसे','थ्रिलर',
+  '\\+'
+].join('|'), 'i');
+function looksLikePrompt(q=''){ return PROMPT_RE.test(String(q||'')); }
 
-async function searchTmdbByGuesses(guesses, mediaType='multi'){
-  const qList = [...new Set((guesses || []).filter(isGoodGuess))].slice(0, 8);
-  if (!qList.length) return [];
-  const settled = await Promise.allSettled(qList.map(g => searchTMDB(g, 'multi', 1, true)));
-  const exact = [];
-  settled.forEach((p, i) => {
-    if (p.status !== 'fulfilled') return;
-    const arr = (p.value?.results || []).filter(r => r.media_type==='movie' || r.media_type==='tv');
-    arr.forEach(it => {
-      const { title, year } = parseGuess(qList[i]);
-      if (normalizeTitle(it.title || it.name) === normalizeTitle(title)) {
-        if (!year || itemYear(it) === year) exact.push(it);
-      }
-    });
+// Map loose prompt/AI items to TMDB-like cards
+function normalizePromptItems(promptItems) {
+  const arr = Array.isArray(promptItems) ? promptItems : (promptItems?.results || []);
+  return arr.map(it => {
+    if (it.media_type && (it.poster_path || it.backdrop_path || it.profile_path)) return it;
+    const obj = { ...it };
+    obj.media_type = obj.media_type || 'movie';
+    if (!obj.release_date && obj.year) obj.release_date = String(obj.year) + '-01-01';
+    if (!obj.poster_path && obj.poster) obj.poster_path = obj.poster.replace(/^https?:\/\/image\.tmdb\.org\/t\/p\/w\d+/i, '');
+    return obj;
   });
-  if (exact.length) {
-    exact.sort((a,b)=>(b.popularity||0)-(a.popularity||0));
-    return [exact[0]];
-  }
-  return [];
-}
-
-async function identifyFromImages(files){
-  if (!files?.length) return null;
-  try {
-    if (typeof api.imageSuggest === 'function') {
-      const r = await api.imageSuggest(files.length === 1 ? files[0] : files);
-      if (!r) return null;
-      const guesses = [];
-      if (r.query) guesses.push(r.query);
-      if (Array.isArray(r.guesses)) guesses.push(...r.guesses);
-      if (Array.isArray(r.titles))  guesses.push(...r.titles);
-      return { guesses: [...new Set(guesses.filter(isGoodGuess))], mediaType: r.mediaType || 'multi' };
-    }
-    if (typeof api.identifyFromImages === 'function') {
-      const r = await api.identifyFromImages(files);
-      if (!r) return null;
-      const g = (r.guesses || r.titles || []).filter(isGoodGuess);
-      return { guesses: g, mediaType: r.mediaType || 'multi' };
-    }
-  } catch (e) { console.warn('identifyFromImages failed', e); }
-  return null;
 }
 
 /* =========================
@@ -436,34 +433,103 @@ async function runSearch() {
   activeGenres.clear();
   current.page = 1;
 
+  const DESCRIBE_TITLE_MSG = `
+    <div class="empty">
+      <b>Describe</b> is for <em>vibes</em> or <em>people</em> (biographies).<br/>
+      To search a specific title, switch to <b>Movie / TV</b> above.<br/>
+      Try: <em>“witty heist with friends”</em> or type a person’s name like <em>John&nbsp;Cena</em>.
+    </div>`;
+
   try {
     let query = text;
     let type = 'multi';
+    current.source = 'tmdb';
 
+    // 1) Images → identify
     if (files.length) {
-      const iden = await identifyFromImages(files);
-      if (iden?.guesses?.length) {
-        type = iden.mediaType || 'multi';
-        rawItems = await searchTmdbByGuesses(iden.guesses, type);
-        renderPeopleStrip([]);
-      } else rawItems = [];
-    }
+      try {
+        const iden = await (async () => {
+          if (!files?.length) return null;
+          try {
+            if (typeof api.imageSuggest === 'function') {
+              const r = await api.imageSuggest(files.length === 1 ? files[0] : files);
+              if (!r) return null;
+              const guesses = [];
+              if (r.query) guesses.push(r.query);
+              if (Array.isArray(r.guesses)) guesses.push(...r.guesses);
+              if (Array.isArray(r.titles))  guesses.push(...r.titles);
+              return { guesses: [...new Set(guesses.filter(Boolean))], mediaType: r.mediaType || 'multi' };
+            }
+          } catch {}
+          return null;
+        })();
 
+        if (iden?.guesses?.length) {
+          type = iden.mediaType || 'multi';
+          const settled = await Promise.allSettled(iden.guesses.slice(0,8).map(g => searchTMDB(g, 'multi', 1, true)));
+          const exact = [];
+          settled.forEach(p => {
+            if (p.status !== 'fulfilled') return;
+            (p.value?.results||[])
+              .filter(r => r.media_type==='movie' || r.media_type==='tv')
+              .forEach(it => exact.push(it));
+          });
+          rawItems = exact.slice(0,1);
+          renderPeopleStrip([]);
+        } else rawItems = [];
+      } catch { rawItems = []; }
+    }
     if (files.length && rawItems.length === 0 && !text) {
       results.innerHTML = '<div class="empty">Couldn’t confidently match your poster.<br/>Try typing a few letters and press <b>Suggest</b>.</div>';
       saveLastSearchState();
       return;
     }
 
-    if (!files.length || rawItems.length === 0) {
-      if (mode === 'describe' && text) {
-        const ai = await aiSuggest(text, mode);
-        query = ai.query || text;
-        type = ai.mediaType === 'both' ? 'multi' : (ai.mediaType || 'multi');
+    // 2) Describe mode — DO NOT use prompt/AI; never show default cards
+    if (!files.length && text && mode === 'describe') {
+      // Only use TMDB to detect people; if titles found, show helper message instead of cards
+      const data = await searchTMDB(text, 'multi', 1);
+      const people = (data.results || []).filter(r => r.media_type === 'person');
+      const hasTitles = (data.results || []).some(r => r.media_type === 'movie' || r.media_type === 'tv');
+
+      if (people.length) {
+        renderPeopleStrip(people);
+        results.innerHTML = '';
+      } else if (hasTitles) {
+        results.innerHTML = DESCRIBE_TITLE_MSG;
+      } else {
+        results.innerHTML = renderNoResultsMessage(text);
       }
-      current = { query, type, page: 1 };
+
+      rawItems = []; // suppress cards in Describe
+      if (toolbar) toolbar.hidden = true;
+      if (regionPriceTools) regionPriceTools.hidden = true;
+      if (filtersBox) filtersBox.hidden = true;
+      if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+      saveLastSearchState();
+      return;
+    }
+
+    // 3) Title mode: prompt-like queries → Gemini normalize → promptSearch (AI-fused)
+    if (!files.length && text && mode === 'title' && rawItems.length === 0 && looksLikePrompt(text)) {
+      try {
+        const ai = await aiSuggest(text, 'title');
+        const promptItems = await promptSearch(text, {
+          type: (ai?.mediaType === 'tv' ? 'tv' : ai?.mediaType === 'movie' ? 'movie' : 'multi'),
+          ai,
+          region: userRegion
+        });
+        rawItems = normalizePromptItems(promptItems);
+        current.source = 'prompt';
+        renderPeopleStrip([]);
+      } catch { rawItems = []; }
+    }
+
+    // 4) Fallback — TMDB only (Describe mode will NOT use aiSuggest anymore)
+    if (!files.length && rawItems.length === 0) {
+      current = { query, type, page: 1, source: 'tmdb' };
       const data = await searchTMDB(current.query, current.type, current.page);
-      if (!files.length && mode === 'title' && selectedFromTA?.id) {
+      if (mode === 'title' && selectedFromTA?.id) {
         const exact = (data.results || []).find(r => (r.media_type==='movie' || r.media_type==='tv') && r.id === selectedFromTA.id);
         rawItems = exact ? [exact] : [{
           id: selectedFromTA.id, media_type: selectedFromTA.media_type || 'movie',
@@ -474,52 +540,80 @@ async function runSearch() {
       } else {
         const people = (data.results || []).filter(r => r.media_type === 'person');
         rawItems = (data.results || []).filter(r => r.media_type === 'movie' || r.media_type === 'tv');
-        if (!files.length && mode === 'describe' && people.length) await renderPeopleStrip(people);
-        else renderPeopleStrip([]);
+        if (people.length) await renderPeopleStrip(people); else renderPeopleStrip([]);
       }
     }
 
+    // Sort & draw
+    if (rawItems.length) {
+      rawItems = rawItems.slice().sort((a,b)=> (b.vote_average||0)-(a.vote_average||0) || (b.popularity||0)-(a.popularity||0));
+    }
+
     const hasResults = rawItems.length > 0;
-    if (toolbar) toolbar.hidden = !hasResults;
-    if (regionPriceTools) regionPriceTools.hidden = !hasResults;
+    const showTools = hasResults && current.source === 'tmdb';
+    if (toolbar) toolbar.hidden = !showTools;
+    if (regionPriceTools) regionPriceTools.hidden = !showTools;
 
     if (hasResults) {
       await ensureGenres();
       const list = (type === 'movie' ? genreMap.movie : type === 'tv' ? genreMap.tv : [...genreMap.movie, ...genreMap.tv]);
       if (filtersBox) {
-        filtersBox.hidden = false;
-        renderGenres(filtersBox, list, (id) => { activeGenres.has(id) ? activeGenres.delete(id) : activeGenres.add(id); applyAndDraw(rawItems); }, activeGenres);
+        filtersBox.hidden = !showTools;
+        if (showTools) {
+          renderGenres(
+            filtersBox,
+            list,
+            (id)=>{ activeGenres.has(id)?activeGenres.delete(id):activeGenres.add(id); applyAndDraw(rawItems); },
+            activeGenres
+          );
+        }
       }
       applyAndDraw(rawItems);
     } else {
-      results.innerHTML = '';
+      const q = (input?.value || '').trim();
+      if (q) {
+        results.innerHTML = renderNoResultsMessage(q);
+      } else {
+        results.innerHTML = '';
+        const welcome2 = document.getElementById('welcome');
+        if (welcome2) welcome2.hidden = false;
+      }
       showEmpty(true);
       saveLastSearchState();
     }
   } catch (err) {
     console.error('Search failed:', err);
-    results.innerHTML = '<div class="empty">Something went wrong.<br/>Please try again.</div>';
+    results.innerHTML = `
+      <div class="empty">
+        Something went wrong while fetching results.
+        <div style="margin-top:.25rem;opacity:.9">
+          Please try again, or narrow your search (add a language like “Hindi” / “English”).
+        </div>
+      </div>`;
     showEmpty(true);
+    const welcome3 = document.getElementById('welcome');
+    if (welcome3) welcome3.hidden = false;
     saveLastSearchState();
   }
 }
 
-// Main trigger(s)
+// triggers
 function triggerSuggest(){ runSearch().catch(console.error); }
 suggestBtn?.addEventListener('click', triggerSuggest);
 form?.addEventListener('submit', (e)=>{ e.preventDefault(); triggerSuggest(); });
 
-/* Load more */
+/* Load more (TMDB-paged only) */
 loadMoreBtn?.addEventListener('click', async () => {
   try {
+    if (current.source !== 'tmdb') return;
     current.page += 1;
     const next = await searchTMDB(current.query, current.type, current.page);
     const items = (next.results || []).filter(r => r.media_type==='movie' || r.media_type==='tv');
-    if (!hasImages() && mode === 'describe') {
-      const newPeople = (next.results || []).filter(r => r.media_type==='person');
-      if (newPeople.length && !document.getElementById('people-strip')) await renderPeopleStrip(newPeople);
-    }
-    rawItems = rawItems.concat(items);
+
+    const newPeople = (next.results || []).filter(r => r.media_type==='person');
+    if (newPeople.length && !document.getElementById('people-strip')) await renderPeopleStrip(newPeople);
+
+    rawItems = rawItems.concat(items).sort((a,b)=> (b.vote_average||0)-(a.vote_average||0) || (b.popularity||0)-(a.popularity||0));
     applyAndDraw(rawItems);
   } catch (err) { console.error('Load more failed:', err); }
 });
@@ -538,9 +632,10 @@ if (priceSel) {
   priceSel.addEventListener('change', () => { userPrice = priceSel.value || 'all'; saveLastSearchState(); });
 }
 
-/* Modal close */
+/* Modal close (bugfix) */
 document.getElementById('modal')?.addEventListener('click', (e) => {
-  if (!e.target.hasAttribute('data-close')) return;
+  const target = e.target;
+  if (!(target?.hasAttribute?.('data-close'))) return;
   const frame = document.getElementById('yt-frame');
   if (frame) { closeTrailer(); return; }
   const m = document.getElementById('modal');
@@ -550,7 +645,6 @@ document.getElementById('modal')?.addEventListener('click', (e) => {
 /* =========================
    Persist + Restore
    ========================= */
-const STORE_KEY = 'cf:lastSearch:v1';
 function saveLastSearchState() {
   try {
     const state = {
@@ -568,9 +662,12 @@ async function restoreLastSearchState() {
     const raw = sessionStorage.getItem(STORE_KEY); if (!raw) return false;
     const s = JSON.parse(raw);
     if (input) input.value = s.q || '';
-    mode = s.mode || 'describe';
-    if (mode === 'title') { modeTitle?.classList.add('chip--active'); modeDescribe?.classList.remove('chip--active'); if (input) input.placeholder='Type a movie or show…'; }
-    else { modeDescribe?.classList.add('chip--active'); modeTitle?.classList.remove('chip--active'); if (input) input.placeholder='Describe a mood… e.g., witty heist with friends'; }
+
+    mode = s.mode || mode || 'title';
+    if (mode === 'title') { modeTitle?.classList.add('chip--active'); modeDescribe?.classList.remove('chip--active'); }
+    else { modeDescribe?.classList.add('chip--active'); modeTitle?.classList.remove('chip--active'); }
+    setPlaceholders();
+
     if (typeSel) typeSel.value = s.typeSel || 'all';
     if (sortSel) sortSel.value = s.sortSel || sortSel.value;
     if (searchInResults) searchInResults.value = s.searchInResults || '';
@@ -580,16 +677,25 @@ async function restoreLastSearchState() {
     rawItems = Array.isArray(s.rawItems) ? s.rawItems : [];
     activeGenres = new Set(Array.isArray(s.activeGenres) ? s.activeGenres : []);
     lastPeople = Array.isArray(s.lastPeople) ? s.lastPeople : [];
+
     const hasResults = rawItems.length > 0;
-    if (toolbar) toolbar.hidden = !hasResults;
-    if (regionPriceTools) regionPriceTools.hidden = !hasResults;
-    if (mode === 'describe' && lastPeople.length) await renderPeopleStrip(lastPeople);
+    const welcomeEl = document.getElementById('welcome');
+    if (welcomeEl) welcomeEl.hidden = !!hasResults;
+
+    const showTools = hasResults && (s.current?.source === 'tmdb');
+    if (toolbar) toolbar.hidden = !showTools;
+    if (regionPriceTools) regionPriceTools.hidden = !showTools;
+
+    if (!hasResults && lastPeople.length) await renderPeopleStrip(lastPeople);
+
     if (hasResults) {
       await ensureGenres();
       const list = (current.type === 'movie' ? genreMap.movie : current.type === 'tv' ? genreMap.tv : [...genreMap.movie, ...genreMap.tv]);
       if (filtersBox) {
-        filtersBox.hidden = false;
-        renderGenres(filtersBox, list, (id)=>{ activeGenres.has(id)?activeGenres.delete(id):activeGenres.add(id); applyAndDraw(rawItems); }, activeGenres);
+        filtersBox.hidden = !showTools;
+        if (showTools) {
+          renderGenres(filtersBox, list, (id)=>{ activeGenres.has(id)?activeGenres.delete(id):activeGenres.add(id); applyAndDraw(rawItems); }, activeGenres);
+        }
       }
       applyAndDraw(rawItems);
     } else { results.innerHTML=''; showEmpty(true); }
